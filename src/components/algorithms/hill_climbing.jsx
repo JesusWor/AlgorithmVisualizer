@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function HillClimbing() {
+  const navigate = useNavigate();
   const [landscape, setLandscape] = useState([]);
   const [numPoints, setNumPoints] = useState(40);
   const [isRunning, setIsRunning] = useState(false);
@@ -9,6 +11,13 @@ export default function HillClimbing() {
   const [bestIndex, setBestIndex] = useState(null);
   const [steps, setSteps] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+  const runningRef = useRef(false);
+
+  // visualization constants (used by both generator and renderer)
+  const SVG_WIDTH = 900;
+  const SVG_HEIGHT = 300;
+  const TOP_PADDING = 48;
+  const BOTTOM_PADDING = 36;
 
   useEffect(() => {
     generateLandscape();
@@ -19,7 +28,7 @@ export default function HillClimbing() {
 
   const generateLandscape = () => {
     const arr = [];
-    const width = 600;
+    const width = SVG_WIDTH;
     const spacing = width / numPoints;
 
     // produce an interesting landscape using sin waves + noise
@@ -44,25 +53,34 @@ export default function HillClimbing() {
     setErrorMessage("");
   };
 
+  // derived values used by rendering to avoid recomputing inside the JSX map
+  const maxVal = landscape.length ? Math.max(...landscape.map((p) => p.value)) : 1;
+  const scaleHeight = Math.max(60, SVG_HEIGHT - TOP_PADDING - BOTTOM_PADDING);
+  const barWidth = Math.min(24, Math.max(6, SVG_WIDTH / numPoints * 0.6));
+
   const runHillClimbing = async () => {
     if (landscape.length === 0) return;
     setIsRunning(true);
+    runningRef.current = true;
     setSteps([]);
     setErrorMessage("");
+    // create a local copy so we don't rely on stale state
+    const local = landscape.map((p) => ({ ...p }));
 
     // start at a random index
-    let current = Math.floor(Math.random() * landscape.length);
+    let current = Math.floor(Math.random() * local.length);
     let best = current;
 
-    // mark start
-    setLandscape((prev) => prev.map((p) => ({ ...p, state: "normal" })));
+    // reset states in local copy and in UI
+    for (let p of local) p.state = "normal";
+    setLandscape(local.map((p) => ({ ...p })));
     setCurrentIndex(current);
     setBestIndex(best);
 
-    const maxIterations = landscape.length * 10;
+    const maxIterations = local.length * 50;
     let iter = 0;
 
-    while (isRunning || iter === 0) {
+    while (runningRef.current) {
       iter++;
       if (iter > maxIterations) {
         setErrorMessage("Máximo de iteraciones alcanzado");
@@ -72,42 +90,39 @@ export default function HillClimbing() {
       // look at neighbors (left and right)
       const neighbors = [];
       if (current - 1 >= 0) neighbors.push(current - 1);
-      if (current + 1 < landscape.length) neighbors.push(current + 1);
+      if (current + 1 < local.length) neighbors.push(current + 1);
 
       // find best neighbor
       let bestNeighbor = current;
       for (const ni of neighbors) {
-        if (landscape[ni].value > landscape[bestNeighbor].value) {
+        if (local[ni].value > local[bestNeighbor].value) {
           bestNeighbor = ni;
         }
       }
 
-      // record the attempt
+      // record the attempt using local values
       setSteps((prev) => [
         ...prev,
         {
           from: current,
           to: bestNeighbor,
-          fromValue: landscape[current].value,
-          toValue: landscape[bestNeighbor].value,
+          fromValue: local[current].value,
+          toValue: local[bestNeighbor].value,
         },
       ]);
 
-      // update visualization states
-      setLandscape((prev) =>
-        prev.map((p) => {
-          if (p.id === current) return { ...p, state: "visited" };
-          if (p.id === bestNeighbor) return { ...p, state: "candidate" };
-          return { ...p, state: "normal" };
-        })
-      );
+      // update local visualization states
+      for (let p of local) p.state = "normal";
+      local[current].state = "visited";
+      local[bestNeighbor].state = "candidate";
+      setLandscape(local.map((p) => ({ ...p })));
 
       await delay(animationSpeed);
 
       // move if better
-      if (landscape[bestNeighbor].value > landscape[current].value) {
+      if (local[bestNeighbor].value > local[current].value) {
         current = bestNeighbor;
-        if (landscape[current].value > landscape[best].value) best = current;
+        if (local[current].value > local[best].value) best = current;
         setCurrentIndex(current);
         setBestIndex(best);
         // continue searching
@@ -117,28 +132,50 @@ export default function HillClimbing() {
       }
 
       // allow early stop
-      if (!isRunning) break;
+      if (!runningRef.current) break;
     }
 
     // finalize states
-    setLandscape((prev) => prev.map((p) => ({
-      ...p,
-      state: p.id === best ? "best" : p.state === "visited" || p.state === "candidate" ? p.state : "normal",
-    })));
+    for (let p of local) {
+      p.state = p.id === best ? "best" : p.state;
+    }
+    setLandscape(local.map((p) => ({ ...p })));
 
     setCurrentIndex(null);
     setIsRunning(false);
+    runningRef.current = false;
   };
 
   return (
     <div
       style={{
+        position: "relative",
         minHeight: "100vh",
         background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
         padding: "3rem 1rem",
       }}
     >
       <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+        <button
+          aria-label="Back"
+          onClick={() => navigate(-1)}
+          style={{
+            position: "absolute",
+            left: 16,
+            top: 16,
+            zIndex: 60,
+            padding: "0.4rem 0.6rem",
+            borderRadius: 8,
+            border: "none",
+            background: "rgba(255,255,255,0.9)",
+            color: "#374151",
+            fontWeight: 700,
+            cursor: "pointer",
+            boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
+          }}
+        >
+          ← Atrás
+        </button>
         <div style={{ textAlign: "center", marginBottom: "1.5rem", color: "white" }}>
           <h1 style={{ fontSize: "2rem", fontWeight: "700" }}>Hill Climbing</h1>
           <p style={{ opacity: 0.9 }}>Búsqueda local ascendente en una función unidimensional</p>
@@ -176,7 +213,14 @@ export default function HillClimbing() {
 
             <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}>
               <button
-                onClick={() => (isRunning ? setIsRunning(false) : runHillClimbing())}
+                onClick={() => {
+                  if (isRunning) {
+                    setIsRunning(false);
+                    runningRef.current = false;
+                  } else {
+                    runHillClimbing();
+                  }
+                }}
                 style={{ flex: 1, padding: "0.6rem", borderRadius: 8, border: "none", background: isRunning ? "#ef4444" : "#10b981", color: "white", fontWeight: 700 }}
               >
                 {isRunning ? "Detener" : "Ejecutar"}
@@ -209,28 +253,31 @@ export default function HillClimbing() {
 
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             <div style={{ background: "rgba(255,255,255,0.95)", borderRadius: 12, padding: "1rem", boxShadow: "0 8px 32px rgba(0,0,0,0.06)" }}>
-              <svg width="100%" viewBox="0 0 600 220" preserveAspectRatio="xMidYMid meet" style={{ display: "block", margin: "0 auto" }}>
-                <rect x="0" y="0" width="600" height="220" fill="transparent" />
+              <svg width="100%" viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`} preserveAspectRatio="xMidYMid meet" style={{ display: "block", margin: "0 auto" }}>
+                <rect x="0" y="0" width={SVG_WIDTH} height={SVG_HEIGHT} fill="transparent" />
                 {landscape.map((p) => {
-                  const barHeight = Math.max(6, (p.value / 120) * 160);
+                  const barHeight = Math.max(6, (p.value / maxVal) * scaleHeight);
                   const color = p.state === "best" ? "#f59e0b" : p.state === "candidate" ? "#60a5fa" : p.state === "visited" ? "#8b5cf6" : "#9ca3af";
                   const cx = p.x;
                   return (
                     <g key={p.id}>
-                      <rect x={cx - 5} y={200 - barHeight} width={10} height={barHeight} fill={color} rx={3} />
-                      <text x={cx} y={205} fontSize="9" textAnchor="middle" fill="#374151">{p.id}</text>
+                      <rect x={cx - barWidth / 2} y={SVG_HEIGHT - BOTTOM_PADDING - barHeight} width={barWidth} height={barHeight} fill={color} rx={3} />
+                      <text x={cx} y={SVG_HEIGHT - 8} fontSize="9" textAnchor="middle" fill="#374151">{p.id}</text>
+                      {barHeight > 18 && (
+                        <text x={cx} y={SVG_HEIGHT - BOTTOM_PADDING - barHeight - 6} fontSize="9" textAnchor="middle" fill="#111">{p.value}</text>
+                      )}
                     </g>
                   );
                 })}
 
-                {currentIndex !== null && (
+                {currentIndex !== null && landscape[currentIndex] && (
                   <g>
-                    <text x={landscape[currentIndex].x} y={40} fontSize="12" textAnchor="middle" fill="#111" fontWeight={700}>Actual</text>
+                    <text x={landscape[currentIndex].x} y={TOP_PADDING - 6} fontSize="13" textAnchor="middle" fill="#111" fontWeight={700}>Actual</text>
                   </g>
                 )}
-                {bestIndex !== null && (
+                {bestIndex !== null && landscape[bestIndex] && (
                   <g>
-                    <text x={landscape[bestIndex].x} y={18} fontSize="12" textAnchor="middle" fill="#111" fontWeight={700}>Mejor</text>
+                    <text x={landscape[bestIndex].x} y={TOP_PADDING - 26} fontSize="13" textAnchor="middle" fill="#111" fontWeight={700}>Mejor</text>
                   </g>
                 )}
               </svg>
