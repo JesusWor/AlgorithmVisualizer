@@ -41,12 +41,12 @@ export const algorithms = [
 
 export const IterativeImprovementAlgorithms = [
   {
-    id: "hillclimbing",
+    id: "hill_climbing",
     title: "Hill Climbing",
     description: "Algoritmo de optimización local que busca soluciones mejores mediante movimientos incrementales",
     category: "Optimización",
     icon: Shuffle,
     color: "#EF4444", // red-500
-    href: "/algorithms/MejoraIterativa/illclimbing",
+    href: "/algorithms/MejoraIterativa/hill_climbing",
   }
 ]
