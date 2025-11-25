@@ -36,24 +36,17 @@ export const algorithms = [
     icon: Shuffle,
     color: "#A855F7", // purple-500
     href: "/algorithms/mitm",
-  },
+  }
+]
+
+export const IterativeImprovementAlgorithms = [
   {
-    id: "hill_climbing",
+    id: "hillclimbing",
     title: "Hill Climbing",
-    description: "Algoritmo de optimización que busca soluciones mejores mediante movimientos locales",
+    description: "Algoritmo de optimización local que busca soluciones mejores mediante movimientos incrementales",
     category: "Optimización",
     icon: Shuffle,
     color: "#EF4444", // red-500
-    href: "/algorithms/hill_climbing",
-  },
-  {
-    id: "simulated_annealing",
-    title: "Simulated Annealing",
-    description: "Algoritmo de optimización inspirado en el proceso de recocido metálico",
-    category: "Optimización",
-    icon: Shuffle,
-    color: "#10B981", // emerald-500
-    href: "/algorithms/simulated_annealing",
+    href: "/algorithms/MejoraIterativa/illclimbing",
   }
-
 ]
