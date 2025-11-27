@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function KnapsackPruning() {
+export default function branchPruning() {
   const navigate = useNavigate();
   // Configuración inicial
-  const [numItems, setNumItems] = useState(6);
+  const [numItems, setNumItems] = useState(5);
   const [items, setItems] = useState([]);
-  const [capacity, setCapacity] = useState(15);
+  const [capacity, setCapacity] = useState(10);
   
   // Estados de ejecución
   const [isRunning, setIsRunning] = useState(false);
@@ -24,19 +24,18 @@ export default function KnapsackPruning() {
   const isRunningRef = useRef(false);
   const bestValueRef = useRef(0); 
 
-  // Generar items al cargar o cambiar numItems
   useEffect(() => {
     generateItems();
   }, [numItems]);
 
   const generateItems = () => {
     const newItems = Array.from({ length: numItems }, (_, i) => {
-      const w = Math.floor(Math.random() * 8) + 1; // Peso entre 1 y 9
-      const v = Math.floor(Math.random() * 80) + 10; // Valor entre 10 y 90
+      const w = Math.floor(Math.random() * 6) + 2; // Pesos entre 2 y 8
+      const v = Math.floor(Math.random() * 80) + 20; // Valores entre 20 y 100
       return { id: i + 1, w, v, ratio: (v / w).toFixed(2) };
     });
-    // Ordenar por densidad (Valor/Peso) para optimizar la poda B&B
-    newItems.sort((a, b) => b.v / b.w - a.v / a.w);
+    // Ordenar por densidad (Valor/Peso)
+    newItems.sort((a, b) => (b.v / b.w) - (a.v / a.w));
     setItems(newItems);
     reset();
   };
@@ -59,9 +58,10 @@ export default function KnapsackPruning() {
 
   const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
-  // Función Bound
   const getBound = (idx, cw, cv) => {
-    if (cw >= capacity) return 0;
+    // Rama invalida si el peso excede la capacidad
+    if (cw > capacity) return 0;
+    
     let bound = cv;
     let totalWeight = cw;
     let j = idx;
@@ -72,10 +72,11 @@ export default function KnapsackPruning() {
       bound += items[j].v;
       j++;
     }
-    // Agregar fracción del siguiente ítem
+    
     if (j < items.length) {
       bound += (capacity - totalWeight) * (items[j].v / items[j].w);
     }
+    
     return bound;
   };
 
@@ -105,7 +106,7 @@ export default function KnapsackPruning() {
     setPath(currentPath);
     await delay(speed);
 
-    // Caso base: se acabaron los items
+    // Caso base: se acabaron los objetos o se llegó al final
     if (idx === items.length) {
       if (cv > bestValueRef.current) {
         bestValueRef.current = cv; 
@@ -115,22 +116,23 @@ export default function KnapsackPruning() {
       return;
     }
 
-    // Calcular Cota
+    // Calcular Cota 
     const bound = getBound(idx, cw, cv);
     
-    // Poda si la cota no mejora el mejor valor conocido
+    // Poda (si la cota no supera el mejor valor actual)
     if (bound <= bestValueRef.current) {
-      addLog(`PODA en nodo ${idx}: Cota ${bound.toFixed(1)} <= Mejor ${bestValueRef.current}`, "warn");
+      addLog(`PODA en nodo ${idx}: Cota ${bound.toFixed(1)} no supera ${bestValueRef.current}`, "warn");
       return; 
     }
 
-    // Rama Izquierda: Incluir Item (si cabe)
+    // Rama Izquierda: Incluir Objeto
     if (cw + items[idx].w <= capacity) {
       await knapsackDFS(idx + 1, cw + items[idx].w, cv + items[idx].v, [...currentPath, 1]);
     }
 
-    // Rama Derecha: Excluir Item
+    // Rama Derecha: Excluir Objeto
     const boundWithout = getBound(idx + 1, cw, cv);
+    
     if (boundWithout > bestValueRef.current) {
       await knapsackDFS(idx + 1, cw, cv, [...currentPath, 0]);
     } else {
@@ -187,15 +189,14 @@ export default function KnapsackPruning() {
                 Regenerar Objetos
             </button>
 
-            {/* Nuevo Control: Cantidad de Items */}
             <div style={{ marginBottom: "1.5rem" }}>
               <label style={{ display: "block", marginBottom: 6, color: "#555", fontWeight: 600 }}>Cantidad de Objetos: {numItems}</label>
-              <input type="range" min="3" max="15" value={numItems} onChange={(e) => !isRunning && setNumItems(Number(e.target.value))} disabled={isRunning} style={{ width: "100%", accentColor: "#4f46e5" }} />
+              <input type="range" min="3" max="10" value={numItems} onChange={(e) => !isRunning && setNumItems(Number(e.target.value))} disabled={isRunning} style={{ width: "100%", accentColor: "#4f46e5" }} />
             </div>
 
             <div style={{ marginBottom: "1.5rem" }}>
               <label style={{ display: "block", marginBottom: 6, color: "#555", fontWeight: 600 }}>Capacidad Mochila: {capacity}kg</label>
-              <input type="range" min="5" max="50" value={capacity} onChange={(e) => setCapacity(Number(e.target.value))} disabled={isRunning} style={{ width: "100%", accentColor: "#4f46e5" }} />
+              <input type="range" min="5" max="30" value={capacity} onChange={(e) => setCapacity(Number(e.target.value))} disabled={isRunning} style={{ width: "100%", accentColor: "#4f46e5" }} />
             </div>
 
             <div style={{ marginBottom: "1.5rem" }}>
@@ -231,8 +232,7 @@ export default function KnapsackPruning() {
             
             {/* Lista Items Visual */}
             <div style={{ background: "rgba(255,255,255,0.95)", borderRadius: 12, padding: "1.5rem", boxShadow: "0 8px 32px rgba(0,0,0,0.06)" }}>
-                <h4 style={{ margin: "0 0 1rem 0", color: "#333", fontWeight: "bold" }}>Objetos Disponibles (Ordenados por Valor/Peso)</h4>
-                {/* Grid adaptable según cantidad de items */}
+                <h4 style={{ margin: "0 0 1rem 0", color: "#333", fontWeight: "bold" }}>Objetos Disponibles (Ordenados por Densidad)</h4>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "0.8rem" }}>
                     {items.map((item, idx) => {
                         let borderColor = "transparent";

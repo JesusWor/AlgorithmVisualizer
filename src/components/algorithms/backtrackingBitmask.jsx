@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function NQueensBitmask() {
+export default function backtrackingBitmask() {
   const navigate = useNavigate();
   const [n, setN] = useState(8);
   const [board, setBoard] = useState([]); 
