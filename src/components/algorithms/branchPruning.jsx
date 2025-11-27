@@ -134,7 +134,7 @@ export default function KnapsackPruning() {
     if (boundWithout > bestValueRef.current) {
       await knapsackDFS(idx + 1, cw, cv, [...currentPath, 0]);
     } else {
-       addLog(`PODA Derecha en nodo ${idx} (Excluir no promete)`, "warn");
+       addLog(`PODA Derecha en nodo ${idx}`, "warn");
     }
   };
 
