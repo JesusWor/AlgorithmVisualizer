@@ -36,7 +36,25 @@ export const algorithms = [
     icon: Shuffle,
     color: "#A855F7", // purple-500
     href: "/algorithms/mitm",
-  }
+  },
+  {
+    id: "backtracking_pruning",
+    title: "Branch & Bound con Poda",
+    description: "Algoritmo de B&B que utiliza técnicas de poda para reducir el espacio de búsqueda",
+    category: "Optimización",
+    icon: Shuffle,
+    color: "#10B981", // emerald-500
+    href: "/algorithms/branchPruning",
+  },
+  {
+    id: "backtracking_bitmask",
+    title: "Backtracking con Bitmask",
+    description: "Algoritmo de backtracking optimizado utilizando máscaras de bits para representar el estado del tablero",
+    category: "Búsqueda",
+    icon: Shuffle,
+    color: "#F59E0B", // amber-500
+    href: "/algorithms/backtrackingBitmask",
+  },
 ]
 
 export const IterativeImprovementAlgorithms = [

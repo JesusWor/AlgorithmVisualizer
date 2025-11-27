@@ -6,6 +6,8 @@ import MeetInMiddle from "./components/algorithms/mitm";
 // import TopologicalSort from "./components/algorithms/topologicalsort
 import HillClimbing from "./components/algorithms/MejoraIterativa/hill_climbing";
 import SimulatedAnnealing from "./components/algorithms/simulated_annealing";
+import BacktrackingBitmask from "./components/algorithms/backtrackingBitmask";
+import BranchPruning from "./components/algorithms/branchPruning";
 
 export default function Router() {
   return (
@@ -17,6 +19,8 @@ export default function Router() {
       {/* <Route path="/algorithms/topologicalsort" element={<TopologicalSort />} /> */}
       <Route path="/algorithms/MejoraIterativa/hill_climbing" element={<HillClimbing />} />
       <Route path="/algorithms/simulated_annealing" element={<SimulatedAnnealing />} />
+      <Route path="/algorithms/backtrackingBitmask" element={<BacktrackingBitmask />} />
+      <Route path="/algorithms/branchPruning" element={<BranchPruning />} />
     </Routes>
   );
 }
