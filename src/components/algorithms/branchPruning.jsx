@@ -58,7 +58,7 @@ export default function branchPruning() {
 
   const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
-  const getBound = (idx, cw, cv) => {
+  const getBound = (idx, cw, cv, currentItems) => {
     // Rama invalida si el peso excede la capacidad
     if (cw > capacity) return 0;
     
@@ -67,14 +67,14 @@ export default function branchPruning() {
     let j = idx;
     
     // Greedy fraccionario
-    while (j < items.length && totalWeight + items[j].w <= capacity) {
-      totalWeight += items[j].w;
-      bound += items[j].v;
+    while (j < currentItems.length && totalWeight + currentItems[j].w <= capacity) {
+      totalWeight += currentItems[j].w;
+      bound += currentItems[j].v;
       j++;
     }
     
-    if (j < items.length) {
-      bound += (capacity - totalWeight) * (items[j].v / items[j].w);
+    if (j < currentItems.length) {
+      bound += (capacity - totalWeight) * (currentItems[j].v / currentItems[j].w);
     }
     
     return bound;
@@ -82,6 +82,11 @@ export default function branchPruning() {
 
   const solve = async () => {
     if (isRunningRef.current) return;
+    
+    // Capturar snapshot de objetos para asegurar integridad durante la recursión
+    const currentItems = [...items];
+    if (currentItems.length === 0) return;
+
     setIsRunning(true);
     isRunningRef.current = true;
     bestValueRef.current = 0;
@@ -89,14 +94,15 @@ export default function branchPruning() {
     setLogs([]);
     addLog("Iniciando Branch & Bound...", "start");
     
-    await knapsackDFS(0, 0, 0, []);
+    // Pasamos currentItems a la recursión
+    await knapsackDFS(0, 0, 0, [], currentItems);
     
     addLog(`Finalizado. Mejor Valor Global: ${bestValueRef.current}`, "success");
     setIsRunning(false);
     isRunningRef.current = false;
   };
 
-  const knapsackDFS = async (idx, cw, cv, currentPath) => {
+  const knapsackDFS = async (idx, cw, cv, currentPath, currentItems) => {
     if (!isRunningRef.current) return;
 
     // Actualizar UI
@@ -107,7 +113,7 @@ export default function branchPruning() {
     await delay(speed);
 
     // Caso base: se acabaron los objetos o se llegó al final
-    if (idx === items.length) {
+    if (idx === currentItems.length) {
       if (cv > bestValueRef.current) {
         bestValueRef.current = cv; 
         setBestValue(cv);          
@@ -116,25 +122,25 @@ export default function branchPruning() {
       return;
     }
 
-    // Calcular Cota 
-    const bound = getBound(idx, cw, cv);
+    // Calcular Cota usando los items capturados
+    const bound = getBound(idx, cw, cv, currentItems);
     
-    // Poda (si la cota no supera el mejor valor actual)
+    // Poda
     if (bound <= bestValueRef.current) {
       addLog(`PODA en nodo ${idx}: Cota ${bound.toFixed(1)} no supera ${bestValueRef.current}`, "warn");
       return; 
     }
 
     // Rama Izquierda: Incluir Objeto
-    if (cw + items[idx].w <= capacity) {
-      await knapsackDFS(idx + 1, cw + items[idx].w, cv + items[idx].v, [...currentPath, 1]);
+    if (cw + currentItems[idx].w <= capacity) {
+      await knapsackDFS(idx + 1, cw + currentItems[idx].w, cv + currentItems[idx].v, [...currentPath, 1], currentItems);
     }
 
     // Rama Derecha: Excluir Objeto
-    const boundWithout = getBound(idx + 1, cw, cv);
+    const boundWithout = getBound(idx + 1, cw, cv, currentItems);
     
     if (boundWithout > bestValueRef.current) {
-      await knapsackDFS(idx + 1, cw, cv, [...currentPath, 0]);
+      await knapsackDFS(idx + 1, cw, cv, [...currentPath, 0], currentItems);
     } else {
        addLog(`PODA Derecha en nodo ${idx}`, "warn");
     }
