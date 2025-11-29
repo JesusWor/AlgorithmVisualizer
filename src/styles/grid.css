@@ -1,0 +1,87 @@
+.grid-container {
+  display: inline-block;
+  border: 2px solid #334155;
+  border-radius: 8px;
+  overflow: hidden;
+  user-select: none;
+}
+
+.grid-row {
+  display: flex;
+}
+
+.cell {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #1e293b;
+  background: #0f172a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cell:hover {
+  background: #1e293b;
+}
+
+.cell.wall {
+  background: #1e293b;
+  animation: wallAppear 0.2s ease;
+}
+
+.cell.start {
+  background: #10b981;
+  cursor: default;
+}
+
+.cell.end {
+  background: #ef4444;
+  cursor: default;
+}
+
+.cell.visited {
+  background: #3b82f6;
+  animation: visitedAppear 0.3s ease;
+}
+
+.cell.path {
+  background: #f59e0b;
+  animation: pathAppear 0.5s ease;
+}
+
+@keyframes wallAppear {
+  from {
+    transform: scale(0.8);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes visitedAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pathAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 768px) {
+  .cell {
+    width: 20px;
+    height: 20px;
+  }
+}
