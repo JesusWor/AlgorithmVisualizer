@@ -1,0 +1,25 @@
+.tree-visualization {
+  width: 100%;
+  min-height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.empty-message {
+  color: #64748b;
+  font-size: 1.1rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  svg {
+    width: 100%;
+  }
+}

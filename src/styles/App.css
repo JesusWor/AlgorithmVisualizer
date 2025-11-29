@@ -1,0 +1,137 @@
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1.5rem 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 50;
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header h1 {
+  color: white;
+  margin-bottom: 0.25rem;
+  font-size: 1.8rem;
+}
+
+.header p {
+  color: #e0e7ff;
+  font-size: 0.95rem;
+}
+
+.nav-container {
+  background: #1e293b;
+  border-bottom: 2px solid #334155;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.nav-tabs {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  overflow-x: auto;
+  padding: 0 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: #475569 #1e293b;
+}
+
+.nav-tabs::-webkit-scrollbar {
+  height: 6px;
+}
+
+.nav-tabs::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.nav-tabs::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 3px;
+}
+
+.nav-tabs::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+.nav-tab {
+  padding: 1rem 1.5rem;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+  position: relative;
+}
+
+.nav-tab::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.nav-tab:hover {
+  color: #e2e8f0;
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.nav-tab.active {
+  color: #a78bfa;
+  background: rgba(102, 126, 234, 0.15);
+}
+
+.nav-tab.active::after {
+  transform: scaleX(1);
+}
+
+.main-content {
+  flex: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 1.5rem;
+  }
+
+  .header h1 {
+    font-size: 1.8rem;
+  }
+
+  .main-content {
+    padding: 1rem;
+  }
+
+  .nav-tabs {
+    padding: 0 0.5rem;
+  }
+
+  .nav-tab {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+}

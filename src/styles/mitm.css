@@ -1,0 +1,134 @@
+.mitm-visualization {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+}
+
+.mitm-section {
+  background: #1e293b;
+  border-radius: 8px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 600px;
+  border: 2px solid #334155;
+}
+
+.mitm-section h4 {
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.array-display {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+}
+
+.array-item {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.array-item.left {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.array-item.right {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.mitm-divider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 0;
+}
+
+.arrow-down {
+  font-size: 2rem;
+  color: #a78bfa;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.meet-text {
+  padding: 0.5rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+}
+
+.sums-info {
+  text-align: center;
+  color: #94a3b8;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.result-box {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 2px solid;
+}
+
+.result-box.success {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: #10b981;
+}
+
+.result-box.success h4 {
+  color: #10b981;
+  margin-bottom: 1rem;
+}
+
+.result-box.fail {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+}
+
+.result-box.fail h4 {
+  color: #ef4444;
+  margin-bottom: 1rem;
+}
+
+.result-box p {
+  color: #e2e8f0;
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .mitm-section {
+    padding: 1rem;
+  }
+
+  .array-item {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+}
