@@ -24,9 +24,9 @@ function App() {
     { id: 'home', label: '🏠 Inicio' },
     { id: 'linkedlist', label: 'Lista Enlazada' },
     { id: 'bst', label: 'BST / AVL' },
-    { id: 'mergesort', label: 'Merge sort'},
-    { id: 'quicksort', label: 'Quick sort'},
-    { id: 'bubblesort', label: 'Bubble sort'},
+    { id: 'mergesort', label: 'Merge sort' },
+    { id: 'quicksort', label: 'Quick sort' },
+    { id: 'bubblesort', label: 'Bubble sort' },
     { id: 'binarysearch', label: 'Búsqueda Binaria' },
     { id: 'sequential', label: 'Búsqueda Secuencial' },
     { id: 'astar', label: 'A*' },
@@ -42,28 +42,16 @@ function App() {
 
   const handleSelectAlgorithm = (algorithmId) => {
     const mappings = {
-      // Ordenamiento
-      'mergesort': { tab: 'sorting', algo: 'merge' },
-      'quicksort': { tab: 'sorting', algo: 'quick' },
-      'bubblesort': { tab: 'sorting', algo: 'bubble' },
-      
-      // Búsqueda
-      'binarysearch': { tab: 'search', algo: 'binary' },
-      'sequential': { tab: 'search', algo: 'sequential' },
-      
-      // Pathfinding
+      'mergesort': { tab: 'mergesort', algo: null },
+      'quicksort': { tab: 'quicksort', algo: null },
+      'bubblesort': { tab: 'bubblesort', algo: null },
+      'binarysearch': { tab: 'binarysearch', algo: null },
+      'sequential': { tab: 'sequential', algo: null },
       'astar': { tab: 'astar', algo: null },
-      'ida': { tab: 'idastar', algo: null },
-      
-      // Estructuras
-      'avl': { tab: 'bst', algo: null },
-      
-      // Algoritmos avanzados
+      'idastar': { tab: 'idastar', algo: null },
       'backtracking-bitmask': { tab: 'backtracking-bitmask', algo: null },
-      'hillclimbing': { tab: 'annealing', algo: null },
+      'annealing': { tab: 'annealing', algo: null },
       'voronoi': { tab: 'voronoi', algo: null },
-      
-      // Comparaciones
       'comparison': { tab: 'comparison', algo: null },
       'advanced-comparison': { tab: 'advanced-comparison', algo: null }
     };
@@ -131,7 +119,6 @@ function App() {
               <p>Visualizador de Estructuras de Datos y Algoritmos</p>
             </div>
           </header>
-
           <nav className="nav-container">
             <div className="nav-tabs">
               {tabs.map(tab => (
@@ -150,7 +137,6 @@ function App() {
           </nav>
         </>
       )}
-
       <main className={activeTab === 'home' ? '' : 'main-content'}>
         {renderContent()}
       </main>
