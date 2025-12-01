@@ -2,13 +2,19 @@ import { useState, useEffect } from 'react';
 import '../styles/common.css';
 import '../styles/sorting.css';
 
-export function SortingAlgorithms() {
+export function SortingAlgorithms({ initialAlgorithm = 'bubble' }) {
   const [array, setArray] = useState([64, 34, 25, 12, 22, 11, 90]);
   const [sorting, setSorting] = useState(false);
-  const [currentAlgo, setCurrentAlgo] = useState('bubble');
+  const [currentAlgo, setCurrentAlgo] = useState(initialAlgorithm);
   const [comparing, setComparing] = useState([]);
   const [sorted, setSorted] = useState([]);
   const [codeLanguage, setCodeLanguage] = useState('cpp');
+
+  useEffect(() => {
+    if (initialAlgorithm) {
+      setCurrentAlgo(initialAlgorithm);
+    }
+  }, [initialAlgorithm]);
 
   const generateRandom = () => {
     const newArray = Array.from({ length: 10 }, () => Math.floor(Math.random() * 100) + 1);
