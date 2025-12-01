@@ -299,59 +299,9 @@ export function Home({ onSelectAlgorithm }) {
             </div>
           </div>
         ))}
-
-        <div className="features-section">
-          <h2 style={{ textAlign: 'center', marginBottom: '2rem', color: '#e2e8f0' }}>
-            Características Principales
-          </h2>
-          <div className="features-grid">
-            <div className="feature-card">
-              <div className="feature-icon">🎨</div>
-              <h3>Visualización Interactiva</h3>
-              <p>Observa los algoritmos en acción con animaciones en tiempo real</p>
-            </div>
-            <div className="feature-card">
-              <div className="feature-icon">💻</div>
-              <h3>Código C++ y Python</h3>
-              <p>Implementaciones completas listas para copiar y usar</p>
-            </div>
-            <div className="feature-card">
-              <div className="feature-icon">📚</div>
-              <h3>Explicaciones Detalladas</h3>
-              <p>Complejidad temporal, casos de uso y teoría de cada algoritmo</p>
-            </div>
-            <div className="feature-card">
-              <div className="feature-icon">⚡</div>
-              <h3>Comparación de Rendimiento</h3>
-              <p>Compara múltiples algoritmos en el mismo problema</p>
-            </div>
-          </div>
-        </div>
       </div>
 
       <footer className="home-footer">
-        <div className="footer-content">
-          <div className="footer-section">
-            <h3>AlgoVisual</h3>
-            <p>Aprende estructuras de datos y algoritmos de manera visual e interactiva.</p>
-          </div>
-          <div className="footer-section">
-            <h4>Tecnologías</h4>
-            <ul>
-              <li>React + Vite</li>
-              <li>JavaScript (ES6+)</li>
-              <li>CSS Puro</li>
-            </ul>
-          </div>
-          <div className="footer-section">
-            <h4>Recursos</h4>
-            <ul>
-              <li>Código C++</li>
-              <li>Código Python</li>
-              <li>Explicaciones Detalladas</li>
-            </ul>
-          </div>
-        </div>
         <div className="footer-bottom">
           <p>© 2025 AlgoVisual. Herramienta educativa para el aprendizaje de algoritmos.</p>
         </div>
