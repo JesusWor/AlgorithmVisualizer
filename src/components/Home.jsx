@@ -233,20 +233,6 @@ export function Home({ onSelectAlgorithm }) {
           <p className="hero-subtitle">
             Visualiza y aprende estructuras de datos y algoritmos de forma interactiva
           </p>
-          <div className="hero-stats">
-            <div className="stat-item">
-              <span className="stat-number">{stats.algorithms}+</span>
-              <span className="stat-label">Algoritmos</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-number">{stats.categories}</span>
-              <span className="stat-label">Categorías</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-number">{stats.languages}</span>
-              <span className="stat-label">Lenguajes</span>
-            </div>
-          </div>
         </div>
       </div>
 
