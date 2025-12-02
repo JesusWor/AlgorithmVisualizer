@@ -67,4 +67,24 @@
   .queen {
     font-size: 1.8rem;
   }
+
+  .chess-board {
+    border-width: 2px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chess-cell {
+    width: 28px;
+    height: 28px;
+  }
+
+  .queen {
+    font-size: 1.4rem;
+  }
+
+  .chess-board {
+    border-width: 2px;
+    border-radius: 4px;
+  }
 }

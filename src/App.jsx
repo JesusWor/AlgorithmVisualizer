@@ -38,6 +38,7 @@ function App() {
     { id: 'branchandbound', label: 'Branch and Bound' },
     { id: 'mitm', label: 'Meet in Middle' },
     { id: 'annealing', label: 'Simulated Annealing' },
+    { id: 'hillclimbing', label: 'Hill Climbing' },
     { id: 'voronoi', label: 'Voronoi' },
     { id: 'comparison', label: 'Comparación' },
     { id: 'advanced-comparison', label: 'Comparación Avanzada' },

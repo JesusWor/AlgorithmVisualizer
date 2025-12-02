@@ -192,15 +192,21 @@
   .stats-panel {
     flex-direction: column;
     gap: 1rem;
+    padding: 1rem;
   }
 
   .stat-item {
     min-width: auto;
   }
 
+  .stat-value {
+    font-size: 1.5rem;
+  }
+
   .capacity-control label {
     flex-direction: column;
     align-items: flex-start;
+    gap: 0.5rem;
   }
 
   .capacity-control input {
@@ -209,5 +215,47 @@
 
   .selected-items {
     flex-direction: column;
+  }
+
+  .items-editor {
+    padding: 1rem;
+  }
+
+  .solution-panel {
+    padding: 1rem;
+  }
+
+  .solution-panel h3 {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .items-header,
+  .item-row {
+    grid-template-columns: 30px 60px 60px 70px 50px;
+    gap: 0.25rem;
+    padding: 0.4rem;
+    font-size: 0.75rem;
+  }
+
+  .items-editor {
+    padding: 0.75rem;
+  }
+
+  .capacity-control {
+    padding: 0.75rem;
+  }
+
+  .stat-value {
+    font-size: 1.3rem;
+  }
+
+  .solution-panel {
+    padding: 0.75rem;
+  }
+
+  .solution-details p {
+    font-size: 0.9rem;
   }
 }
