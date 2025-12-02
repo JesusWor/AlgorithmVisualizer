@@ -63,7 +63,7 @@ export function Home({ onSelectAlgorithm }) {
           name: 'Lista Enlazada',
           description: 'Estructura lineal donde cada elemento apunta al siguiente',
           icon: '🔗',
-          complexity: 'O(1) inserción, O(n) búsqueda'
+          complexity: "O(1) inserción, O(n) búsqueda"
         },
         {
           id: 'bst',
@@ -181,13 +181,13 @@ export function Home({ onSelectAlgorithm }) {
           icon: '🔥',
           complexity: 'Heurística',
         },
-        {
-          id: 'hillclimbing',
-          name: 'Hill Climbing',
-          description: 'Búsqueda local de mejora iterativa',
-          icon: '⛰️',
-          complexity: 'Heurística'
-        },
+        // {
+        //   id: 'hillclimbing',
+        //   name: 'Hill Climbing',
+        //   description: 'Búsqueda local de mejora iterativa',
+        //   icon: '⛰️',
+        //   complexity: 'Heurística'
+        // },
         {
           id: 'voronoi',
           name: 'Diagrama de Voronoi',
@@ -277,8 +277,11 @@ export function Home({ onSelectAlgorithm }) {
                     <p className="card-description">{item.description}</p>
                     <div className="card-footer">
                       <span className="complexity-badge">
-                        {item.complexity}
+                        {item.complexity.split(",").map((part, i) => (
+                          <div key={i}>{part.trim()}</div>
+                        ))}
                       </span>
+
                       <span className="explore-link">
                         Explorar →
                       </span>

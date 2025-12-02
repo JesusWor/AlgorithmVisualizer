@@ -17,6 +17,7 @@ body {
   background: #0f172a;
   color: #e2e8f0;
   overflow-x: hidden;
+  min-width: 320px;
 }
 
 code {
@@ -51,4 +52,36 @@ button {
   border: none;
   outline: none;
   font-family: inherit;
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+  }
+
+  p {
+    font-size: 0.9rem;
+  }
 }

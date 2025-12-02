@@ -9,7 +9,7 @@
 .head-label {
   color: #a78bfa;
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 1.5vw, 0.9rem);
   letter-spacing: 1px;
   margin-bottom: 0.5rem;
 }
@@ -17,14 +17,18 @@
 .nodes-wrapper {
   display: flex;
   align-items: center;
-  gap: 0;
   flex-wrap: wrap;
+  gap: 0.5rem;
   justify-content: center;
+  padding-bottom: 1rem;
 }
 
 .node-group {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
 }
 
 .node {
@@ -48,20 +52,20 @@
 }
 
 .node-data {
-  padding: 1rem 1.5rem;
+  padding: clamp(0.5rem, 2vw, 1rem) clamp(0.75rem, 3vw, 1.5rem);
+  font-size: clamp(0.85rem, 2vw, 1.1rem);
+  min-width: clamp(40px, 10vw, 60px);
   color: white;
   font-weight: 700;
-  font-size: 1.1rem;
-  min-width: 60px;
   text-align: center;
 }
 
 .node-pointer {
-  padding: 1rem;
-  background: rgba(0, 0, 0, 0.2);
+  padding: clamp(0.5rem, 2vw, 1rem);
+  font-size: clamp(1rem, 3vw, 1.5rem);
   color: white;
-  font-size: 1.5rem;
   font-weight: 700;
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .node-connector {
@@ -91,6 +95,7 @@
   .node-data {
     padding: 0.75rem 1rem;
     font-size: 1rem;
+    min-width: 50px;
   }
 
   .node-pointer {
@@ -105,5 +110,42 @@
   .null-node {
     margin-left: 20px;
     padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .head-label {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .node-data {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    min-width: 40px;
+  }
+
+  .node-pointer {
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .node-connector {
+    width: 15px;
+    height: 2px;
+  }
+
+  .null-node {
+    margin-left: 15px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .head-label {
+    font-size: 0.8rem;
+  }
+
+  .node {
+    border-radius: 6px;
   }
 }

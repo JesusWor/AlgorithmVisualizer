@@ -44,13 +44,43 @@
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
 }
 
+.bar.visited {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  opacity: 0.6;
+}
+
 @media (max-width: 768px) {
   .bars-container {
     gap: 4px;
     height: 250px;
+    padding: 0.5rem;
+  }
+
+  .bar-wrapper {
+    max-width: 40px;
   }
 
   .bar-value {
     font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .bars-container {
+    gap: 2px;
+    height: 200px;
+    padding: 0.25rem;
+  }
+
+  .bar-wrapper {
+    max-width: 30px;
+  }
+
+  .bar-value {
+    font-size: 0.6rem;
+  }
+
+  .bar {
+    border-radius: 2px 2px 0 0;
   }
 }

@@ -1,87 +1,52 @@
-.grid-container {
-  display: inline-block;
-  border: 2px solid #334155;
-  border-radius: 8px;
-  overflow: hidden;
-  user-select: none;
-}
-
-.grid-row {
+.voronoi-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;          /* Permite desplazamiento horizontal si no cabe */
+  -webkit-overflow-scrolling: touch;
   display: flex;
+  justify-content: center;
+  padding: 0.5rem 0;
 }
 
-.cell {
-  width: 30px;
-  height: 30px;
-  border: 1px solid #1e293b;
-  background: #0f172a;
-  cursor: pointer;
-  transition: all 0.2s ease;
+.voronoi-canvas {
+  width: 100%;               /* Escala visualmente */
+  height: auto;              /* Mantiene proporción */
+  max-width: 600px;          /* Tamaño máximo en pantallas grandes */
+
+  border: 2px solid #e5e7eb;
+  background: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+
+  transition: box-shadow 0.2s ease;
 }
 
-.cell:hover {
-  background: #1e293b;
-}
-
-.cell.wall {
-  background: #1e293b;
-  animation: wallAppear 0.2s ease;
-}
-
-.cell.start {
-  background: #10b981;
-  cursor: default;
-}
-
-.cell.end {
-  background: #ef4444;
-  cursor: default;
-}
-
-.cell.visited {
-  background: #3b82f6;
-  animation: visitedAppear 0.3s ease;
-}
-
-.cell.path {
-  background: #f59e0b;
-  animation: pathAppear 0.5s ease;
-}
-
-@keyframes wallAppear {
-  from {
-    transform: scale(0.8);
-  }
-  to {
-    transform: scale(1);
-  }
-}
-
-@keyframes visitedAppear {
-  from {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes pathAppear {
-  from {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
+@media (hover: hover) {
+  .voronoi-canvas:hover {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
   }
 }
 
 @media (max-width: 768px) {
-  .cell {
-    width: 20px;
-    height: 20px;
+  .voronoi-canvas {
+    max-width: 90%;
+  }
+}
+
+@media (max-width: 480px) {
+  .voronoi-canvas {
+    max-width: 100%;
+    border-width: 1.5px;
+    border-radius: 4px;
+  }
+}
+
+@media (max-width: 360px) {
+  .voronoi-wrapper {
+    padding: 0.25rem;
+  }
+
+  .voronoi-canvas {
+    border-width: 1px;
   }
 }

@@ -92,6 +92,16 @@
   box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
 }
 
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
 .input-field {
   padding: 0.75rem;
   border-radius: 8px;
@@ -107,6 +117,11 @@
   border-color: #667eea;
 }
 
+.input-field:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .visualization-area {
   background: #0f172a;
   border-radius: 8px;
@@ -117,6 +132,12 @@
   justify-content: center;
   border: 2px solid #334155;
   margin-bottom: 2rem;
+  overflow-x: auto;
+}
+
+.visualization-area svg {
+  max-width: 100%;
+  height: auto;
 }
 
 .explanation-section {
@@ -199,6 +220,26 @@
   color: white;
 }
 
+.animation-message {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  color: white;
+  text-align: center;
+  font-weight: 500;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-in-out;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.animation-message:empty {
+  display: none;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -221,17 +262,97 @@
     padding: 1rem;
   }
 
+  .section-title {
+    font-size: 1.3rem;
+  }
+
   .controls {
     padding: 1rem;
+    gap: 0.75rem;
   }
 
   .btn {
     padding: 0.6rem 1rem;
     font-size: 0.85rem;
+    flex: 1;
+    min-width: 120px;
   }
 
   .visualization-area {
-    padding: 1rem;
+    padding: 0.75rem;
     min-height: 300px;
+  }
+
+  .visualization-area svg {
+    width: 100%;
+  }
+
+  .input-field {
+    font-size: 0.85rem;
+    padding: 0.6rem;
+    min-width: 100px;
+  }
+
+  .code-block {
+    padding: 1rem;
+  }
+
+  .code-block pre {
+    font-size: 0.75rem;
+  }
+
+  .animation-message {
+    font-size: 0.85rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .explanation-section {
+    padding: 1rem;
+  }
+
+  .explanation-section p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .algo-container {
+    padding: 0.75rem;
+    border-radius: 8px;
+  }
+
+  .section-title {
+    font-size: 1.1rem;
+  }
+
+  .controls {
+    padding: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+    min-width: 100px;
+  }
+
+  .visualization-area {
+    padding: 0.5rem;
+    min-height: 250px;
+  }
+
+  .input-field {
+    font-size: 0.8rem;
+    padding: 0.5rem;
+    min-width: 80px;
+  }
+
+  .code-block pre {
+    font-size: 0.7rem;
+  }
+
+  .animation-message {
+    font-size: 0.8rem;
+    padding: 0.6rem 0.8rem;
   }
 }

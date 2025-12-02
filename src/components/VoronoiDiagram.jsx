@@ -287,8 +287,10 @@ export function VoronoiDiagram() {
     
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
 
     setPoints([...points, {
       x,
@@ -507,14 +509,14 @@ voronoi.print_region_sizes()`
           onClick={generatePoints}
           disabled={isAnimating}
         >
-          🎲 Generar Puntos
+          Generar Puntos
         </button>
         <button 
           className="btn btn-secondary" 
           onClick={() => setPoints([])}
           disabled={isAnimating}
         >
-          🗑️ Limpiar
+          Limpiar
         </button>
       </div>
 
@@ -528,7 +530,7 @@ voronoi.print_region_sizes()`
             cursor: (isAnimating || points.length === 0) ? 'not-allowed' : 'pointer'
           }}
         >
-          {isAnimating ? '⏳ Animando...' : '▶️ Correr Animación'}
+          {isAnimating ? 'Animando...' : 'Correr Animación'}
         </button>
         <button 
           className="btn btn-danger" 
@@ -539,7 +541,7 @@ voronoi.print_region_sizes()`
             cursor: !isAnimating ? 'not-allowed' : 'pointer'
           }}
         >
-          ⏹️ Detener
+          Detener
         </button>
       </div>
 
@@ -570,40 +572,24 @@ voronoi.print_region_sizes()`
         marginTop: '1rem'
       }}>
         <p style={{ margin: 0, fontSize: '0.9rem' }}>
-          💡 <strong>Tip:</strong> Haz clic en el canvas para agregar puntos manualmente. 
+          <strong>Tip:</strong> Haz clic en el canvas para agregar puntos manualmente. 
           La animación muestra cómo cada punto expande su región de influencia simultáneamente, 
           creando los bordes del diagrama de Voronoi donde se encuentran.
         </p>
       </div>
 
       <div className="visualization-area">
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center',
-          background: '#ffffff',
-          padding: '1rem',
-          borderRadius: '8px',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-        }}>
+        <div className="voronoi-wrapper">
           <canvas
             ref={canvasRef}
-            width={WIDTH}
+            width={WIDTH} 
             height={HEIGHT}
             onClick={handleCanvasClick}
+            className="voronoi-canvas"
             style={{
-              border: '2px solid #e5e7eb',
-              borderRadius: '4px',
-              cursor: isAnimating ? 'wait' : 'crosshair'
+              cursor: isAnimating ? "wait" : "crosshair",
             }}
           />
-        </div>
-        <div style={{ 
-          textAlign: 'center', 
-          marginTop: '1rem',
-          color: '#6b7280',
-          fontSize: '0.9rem'
-        }}>
-          Puntos activos: {points.length} | Estado: {isAnimating ? '🔄 Animando...' : '✅ Listo'}
         </div>
       </div>
 

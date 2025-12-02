@@ -4,49 +4,60 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow-x: auto;           /* Permite scroll horizontal si el árbol es muy ancho */
-  overflow-y: hidden;
-  padding: 1rem;
-  box-sizing: border-box;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 1rem;
 }
 
-.tree-visualization::-webkit-scrollbar {
-  height: 8px;
-}
-
-.tree-visualization::-webkit-scrollbar-thumb {
-  background: #94a3b8;
-  border-radius: 4px;
-}
-
+/* Mensaje cuando no hay elementos */
 .empty-message {
   color: #64748b;
-  font-size: 1.1rem;
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
   text-align: center;
   padding: 2rem;
 }
 
-/* SVG responsivo sin perder proporciones */
+/* Ajuste general del SVG */
 svg {
   max-width: 100%;
   height: auto;
-  display: block;
+  min-width: 700px; /* asegura que el árbol no se colapse */
 }
 
-/* Mejor adaptación en móviles */
+/* ----- Breakpoint Tablet (<= 768px) ----- */
 @media (max-width: 768px) {
   .tree-visualization {
-    padding: 0.5rem;
-    justify-content: flex-start;   /* Evita compresión raras del contenido */
+    min-height: 300px;
   }
 
-  svg {
-    width: 120%;                   /* Más espacio visual para árboles complejos */
+  .tree-visualization svg {
+    min-width: 600px;
+  }
+
+  svg text {
+    font-size: 12px;
+  }
+
+  svg circle {
+    r: 25;
   }
 }
 
+/* ----- Breakpoint Móvil (<= 480px) ----- */
 @media (max-width: 480px) {
-  svg {
-    width: 150%;                   /* Aún más espacio en pantallas muy pequeñas */
+  .tree-visualization {
+    min-height: 250px;
+  }
+
+  .tree-visualization svg {
+    min-width: 500px;
+  }
+
+  svg text {
+    font-size: 10px;
+  }
+
+  svg circle {
+    r: 20;
   }
 }
