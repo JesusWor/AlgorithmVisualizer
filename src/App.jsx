@@ -35,6 +35,7 @@ function App() {
     { id: 'idastar', label: 'IDA*' },
     { id: 'backtracking', label: 'Backtracking' },
     { id: 'backtracking-bitmask', label: 'Backtracking Bitmask' },
+    { id: 'branchandbound', label: 'Branch and Bound' },
     { id: 'mitm', label: 'Meet in Middle' },
     { id: 'annealing', label: 'Simulated Annealing' },
     { id: 'voronoi', label: 'Voronoi' },
@@ -73,43 +74,45 @@ function App() {
   const renderContent = () => {
     switch (activeTab) {
       case 'home':
-        return <Home onSelectAlgorithm={handleSelectAlgorithm} />;
+        return <Home onSelectAlgorithm={handleSelectAlgorithm} />
       case 'linkedlist':
-        return <LinkedList />;
+        return <LinkedList />
       case 'bst':
-        return <BinarySearchTree />;
+        return <BinarySearchTree />
       case 'avl':
-        return <AVLTree />;
+        return <AVLTree />
       case 'mergesort':
-        return <SortingAlgorithms initialAlgorithm="merge" />;
+        return <SortingAlgorithms initialAlgorithm="merge" />
       case 'quicksort':
-        return <SortingAlgorithms initialAlgorithm="quick" />;
+        return <SortingAlgorithms initialAlgorithm="quick" />
       case 'bubblesort':
-        return <SortingAlgorithms initialAlgorithm="bubble" />;
+        return <SortingAlgorithms initialAlgorithm="bubble" />
       case 'binarysearch':
-        return <SearchAlgorithms initialAlgorithm="binary" />;
+        return <SearchAlgorithms initialAlgorithm="binary" />
       case 'sequential':
-        return <SearchAlgorithms initialAlgorithm="sequential" />;
+        return <SearchAlgorithms initialAlgorithm="sequential" />
       case 'astar':
-        return <AStarGrid />;
+        return <AStarGrid />
       case 'idastar':
-        return <IDAStarGrid />;
+        return <IDAStarGrid />
       case 'backtracking':
-        return <Backtracking />;
+        return <Backtracking />
       case 'backtracking-bitmask':
-        return <BacktrackingBitmask />;
+        return <BacktrackingBitmask />
+      case 'branchandbound':
+        return <BacktrackingBitmask />
       case 'mitm':
-        return <MeetInTheMiddle />;
+        return <MeetInTheMiddle />
       case 'annealing':
-        return <SimulatedAnnealing />;
+        return <SimulatedAnnealing />
       case 'voronoi':
-        return <VoronoiDiagram />;
+        return <VoronoiDiagram />
       case 'comparison':
-        return <AlgorithmComparison />;
+        return <AlgorithmComparison />
       case 'advanced-comparison':
-        return <AdvancedComparison />;
+        return <AdvancedComparison />
       default:
-        return <Home onSelectAlgorithm={handleSelectAlgorithm} />;
+        return <Home onSelectAlgorithm={handleSelectAlgorithm} />
     }
   };
 
