@@ -4,6 +4,19 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow-x: auto;           /* Permite scroll horizontal si el árbol es muy ancho */
+  overflow-y: hidden;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.tree-visualization::-webkit-scrollbar {
+  height: 8px;
+}
+
+.tree-visualization::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 4px;
 }
 
 .empty-message {
@@ -13,13 +26,27 @@
   padding: 2rem;
 }
 
+/* SVG responsivo sin perder proporciones */
 svg {
   max-width: 100%;
   height: auto;
+  display: block;
 }
 
+/* Mejor adaptación en móviles */
 @media (max-width: 768px) {
+  .tree-visualization {
+    padding: 0.5rem;
+    justify-content: flex-start;   /* Evita compresión raras del contenido */
+  }
+
   svg {
-    width: 100%;
+    width: 120%;                   /* Más espacio visual para árboles complejos */
+  }
+}
+
+@media (max-width: 480px) {
+  svg {
+    width: 150%;                   /* Aún más espacio en pantallas muy pequeñas */
   }
 }
