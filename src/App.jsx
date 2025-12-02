@@ -15,6 +15,7 @@ import { AdvancedComparison } from './components/AdvancedComparison';
 import { SimulatedAnnealing } from './components/SimulatedAnnealing';
 import { MeetInTheMiddle } from './components/MeetInTheMiddle';
 import { VoronoiDiagram } from './components/VoronoiDiagram';
+import { AVLTree } from './components/AVLTree';
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
@@ -23,7 +24,8 @@ function App() {
   const tabs = [
     { id: 'home', label: '🏠 Inicio' },
     { id: 'linkedlist', label: 'Lista Enlazada' },
-    { id: 'bst', label: 'BST / AVL' },
+    { id: 'bst', label: 'BST' },
+    { id: 'avl', label: 'AVL' },
     { id: 'mergesort', label: 'Merge sort' },
     { id: 'quicksort', label: 'Quick sort' },
     { id: 'bubblesort', label: 'Bubble sort' },
@@ -76,6 +78,8 @@ function App() {
         return <LinkedList />;
       case 'bst':
         return <BinarySearchTree />;
+      case 'avl':
+        return <AVLTree />;
       case 'mergesort':
         return <SortingAlgorithms initialAlgorithm="merge" />;
       case 'quicksort':

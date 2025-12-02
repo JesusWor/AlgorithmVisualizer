@@ -166,7 +166,6 @@ export function Home({ onSelectAlgorithm }) {
           description: 'Divide problema exponencial en dos mitades',
           icon: '🤝',
           complexity: 'O(2^(n/2))',
-          isNew: true
         },
         {
           id: 'annealing',
@@ -174,7 +173,6 @@ export function Home({ onSelectAlgorithm }) {
           description: 'Optimización probabilística (TSP)',
           icon: '🔥',
           complexity: 'Heurística',
-          isNew: true
         },
         {
           id: 'hillclimbing',
@@ -209,7 +207,6 @@ export function Home({ onSelectAlgorithm }) {
           description: 'Compara optimizaciones: Bitmask y Meet in the Middle',
           icon: '⚡',
           complexity: 'Analítico',
-          isNew: true
         }
       ]
     }
