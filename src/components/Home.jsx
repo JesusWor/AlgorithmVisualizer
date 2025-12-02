@@ -161,6 +161,13 @@ export function Home({ onSelectAlgorithm }) {
           complexity: 'O(2^n) optimizado'
         },
         {
+          id: 'branchandbound',
+          name: 'Branch and Bound',
+          description: 'Optimización con poda de soluciones (Mochila 0/1)',
+          icon: '🌿',
+          complexity: 'O(2^n) con poda'
+        },
+        {
           id: 'mitm',
           name: 'Meet in the Middle',
           description: 'Divide problema exponencial en dos mitades',
