@@ -244,15 +244,6 @@ else:
       </div>
 
       <div className="controls">
-        <select
-          className="input-field"
-          value={currentAlgo}
-          onChange={(e) => setCurrentAlgo(e.target.value)}
-          disabled={searching}
-        >
-          <option value="sequential">Búsqueda Secuencial</option>
-          <option value="binary">Búsqueda Binaria</option>
-        </select>
         <input
           type="number"
           className="input-field"

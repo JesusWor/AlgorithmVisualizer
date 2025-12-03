@@ -4,6 +4,7 @@ import './styles/App.css';
 import { Home } from './components/Home';
 import { LinkedList } from './components/LinkedList';
 import { BinarySearchTree } from './components/BinarySearchTree';
+import { AVLTree } from './components/AVLTree';
 import { SortingAlgorithms } from './components/SortingAlgorithms';
 import { SearchAlgorithms } from './components/SearchAlgorithms';
 import { AStarGrid } from './components/AStarGrid';
@@ -13,9 +14,9 @@ import { BacktrackingBitmask } from './components/BacktrackingBitmask';
 import { AlgorithmComparison } from './components/AlgorithmComparison';
 import { AdvancedComparison } from './components/AdvancedComparison';
 import { SimulatedAnnealing } from './components/SimulatedAnnealing';
+import HillClimbing from './components/HillClimbing';
 import { MeetInTheMiddle } from './components/MeetInTheMiddle';
 import { VoronoiDiagram } from './components/VoronoiDiagram';
-import { AVLTree } from './components/AVLTree';
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
@@ -55,6 +56,7 @@ function App() {
       'idastar': { tab: 'idastar', algo: null },
       'backtracking-bitmask': { tab: 'backtracking-bitmask', algo: null },
       'annealing': { tab: 'annealing', algo: null },
+      'hillclimbing': { tab: 'hillclimbing', algo: null },
       'voronoi': { tab: 'voronoi', algo: null },
       'comparison': { tab: 'comparison', algo: null },
       'advanced-comparison': { tab: 'advanced-comparison', algo: null }
@@ -106,6 +108,8 @@ function App() {
         return <MeetInTheMiddle />
       case 'annealing':
         return <SimulatedAnnealing />
+      case 'hillclimbing':
+        return <HillClimbing />;
       case 'voronoi':
         return <VoronoiDiagram />
       case 'comparison':

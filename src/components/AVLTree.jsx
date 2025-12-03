@@ -203,7 +203,7 @@ export function AVLTree() {
     const balancedTree = buildBalancedAVL(values, 0, values.length - 1);
     setTree(balancedTree);
     
-    setAnimationMessage('✅ ¡Árbol balanceado correctamente! Todas las alturas difieren en máximo 1.');
+    setAnimationMessage('¡Árbol balanceado correctamente! Todas las alturas difieren en máximo 1.');
     
     setTimeout(() => {
       setIsAnimating(false);
