@@ -181,13 +181,13 @@ export function Home({ onSelectAlgorithm }) {
           icon: '🔥',
           complexity: 'Heurística',
         },
-        // {
-        //   id: 'hillclimbing',
-        //   name: 'Hill Climbing',
-        //   description: 'Búsqueda local de mejora iterativa',
-        //   icon: '⛰️',
-        //   complexity: 'Heurística'
-        // },
+        {
+          id: 'hillclimbing',
+          name: 'Hill Climbing',
+          description: 'Búsqueda local de mejora iterativa',
+          icon: '⛰️',
+          complexity: 'Heurística'
+        },
         {
           id: 'voronoi',
           name: 'Diagrama de Voronoi',

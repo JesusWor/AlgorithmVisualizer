@@ -287,7 +287,7 @@ print("Distancia:", calculate_distance(best_path, cities))`;
       </div>
 
       <div className="visualization-area">
-        <svg width="600" height="400" className="tsp-canvas">
+        <svg width="600" height="400" className="tsp-canvas" viewBox="-200 0 00 400" preserveAspectRatio="xMidYMid meet">
           {/* Dibujar camino actual */}
           {currentPath.length > 0 && cities.length > 0 && (
             <>

@@ -9,7 +9,7 @@
 .head-label {
   color: #a78bfa;
   font-weight: 700;
-  font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+  font-size: 0.9rem;
   letter-spacing: 1px;
   margin-bottom: 0.5rem;
 }
@@ -17,18 +17,14 @@
 .nodes-wrapper {
   display: flex;
   align-items: center;
+  gap: 0;
   flex-wrap: wrap;
-  gap: 0.5rem;
   justify-content: center;
-  padding-bottom: 1rem;
 }
 
 .node-group {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  justify-content: center;
 }
 
 .node {
@@ -52,20 +48,20 @@
 }
 
 .node-data {
-  padding: clamp(0.5rem, 2vw, 1rem) clamp(0.75rem, 3vw, 1.5rem);
-  font-size: clamp(0.85rem, 2vw, 1.1rem);
-  min-width: clamp(40px, 10vw, 60px);
+  padding: 1rem 1.5rem;
   color: white;
   font-weight: 700;
+  font-size: 1.1rem;
+  min-width: 60px;
   text-align: center;
 }
 
 .node-pointer {
-  padding: clamp(0.5rem, 2vw, 1rem);
-  font-size: clamp(1rem, 3vw, 1.5rem);
-  color: white;
-  font-weight: 700;
+  padding: 1rem;
   background: rgba(0, 0, 0, 0.2);
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 
 .node-connector {
