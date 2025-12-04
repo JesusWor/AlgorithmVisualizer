@@ -17,6 +17,7 @@ import { SimulatedAnnealing } from './components/SimulatedAnnealing';
 import HillClimbing from './components/HillClimbing';
 import { MeetInTheMiddle } from './components/MeetInTheMiddle';
 import { VoronoiDiagram } from './components/VoronoiDiagram';
+import { BranchAndBound } from './components/BranchAndBound';
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
@@ -103,7 +104,7 @@ function App() {
       case 'backtracking-bitmask':
         return <BacktrackingBitmask />
       case 'branchandbound':
-        return <BacktrackingBitmask />
+        return <BranchAndBound />
       case 'mitm':
         return <MeetInTheMiddle />
       case 'annealing':
