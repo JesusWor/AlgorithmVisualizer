@@ -1,12 +1,152 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import '../styles/common.css';
 import '../styles/comparison.css';
+
+const MAX_ANIM_N = 8;
+const SUBSET_ARR = Array.from({ length: 12 }, (_, i) => i + 1);
+const SUBSET_TARGET = 20;
+const QUEENS_ALGOS = ['Backtracking Normal', 'Backtracking + Bitmask'];
+const SUBSET_ALGOS = ['Backtracking', 'Meet in the Middle'];
+const PHASE_LABEL = {
+  L: 'Mitad izquierda: generando sumas',
+  R: 'Mitad derecha: buscando complemento'
+};
+
+const STYLES = `
+.adv-grids { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 1rem 0 2rem; }
+.adv-card { background: rgba(15, 23, 42, 0.6); border-radius: 8px; padding: 0.75rem; }
+.adv-board { display: grid; gap: 1px; background: #0f172a; border: 1px solid #334155; max-width: 320px; margin: 0 auto; }
+.adv-cell { aspect-ratio: 1; background: #1e293b; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #fbbf24; }
+.adv-cell.dark { background: #273449; }
+.adv-cell.queen { background: #7c6bd6; animation: adv-pop 0.25s ease-out; }
+.adv-cell.reject { background: #ef4444; }
+.adv-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.adv-chip { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 6px; background: #1e293b; color: #94a3b8; transition: background 0.15s, color 0.15s; }
+.adv-chip.gap { margin-left: 14px; }
+.adv-chip.on { background: #7c6bd6; color: #fff; }
+.adv-chip.on.hit { background: #10b981; }
+.adv-meta { margin-top: 0.5rem; font-size: 0.85rem; color: #94a3b8; text-align: center; line-height: 1.6; }
+@keyframes adv-pop { 0% { transform: scale(0.4); } 70% { transform: scale(1.2); } 100% { transform: scale(1); } }
+`;
+
+// Eventos: ['p', fila, col] coloca, ['r', fila, col] retira, ['x', fila, col] rechaza, ['s'] solución
+const traceQueens = (n, useBitmask) => {
+  const events = [];
+
+  if (!useBitmask) {
+    const board = Array(n).fill(-1);
+    const isSafe = (row, col) => {
+      for (let i = 0; i < row; i++) {
+        if (board[i] === col || Math.abs(board[i] - col) === Math.abs(i - row)) return false;
+      }
+      return true;
+    };
+    const solve = (row) => {
+      if (row === n) { events.push(['s']); return; }
+      for (let col = 0; col < n; col++) {
+        if (isSafe(row, col)) {
+          board[row] = col;
+          events.push(['p', row, col]);
+          solve(row + 1);
+          board[row] = -1;
+          events.push(['r', row, col]);
+        } else {
+          events.push(['x', row, col]);
+        }
+      }
+    };
+    solve(0);
+  } else {
+    const solve = (row, cols, d1, d2) => {
+      if (row === n) { events.push(['s']); return; }
+      let available = ((1 << n) - 1) & ~(cols | d1 | d2);
+      while (available) {
+        const pos = available & -available;
+        available -= pos;
+        const col = 31 - Math.clz32(pos);
+        events.push(['p', row, col]);
+        solve(row + 1, cols | pos, (d1 | pos) << 1, (d2 | pos) >> 1);
+        events.push(['r', row, col]);
+      }
+    };
+    solve(0, 0, 0, 0);
+  }
+  return events;
+};
+
+// Eventos: [mascara de elementos, suma, soluciones encontradas, fase]
+const traceSubsetBacktracking = () => {
+  const events = [];
+  const solve = (index, sum, mask) => {
+    const hit = sum === SUBSET_TARGET;
+    events.push([mask, sum, hit ? 1 : 0, 'B']);
+    if (hit || index >= SUBSET_ARR.length || sum > SUBSET_TARGET) return;
+    solve(index + 1, sum + SUBSET_ARR[index], mask | (1 << index));
+    solve(index + 1, sum, mask);
+  };
+  solve(0, 0, 0);
+  return events;
+};
+
+const traceSubsetMITM = () => {
+  const n = SUBSET_ARR.length;
+  const mid = Math.floor(n / 2);
+  const events = [];
+  const leftSums = new Map();
+
+  for (let mask = 0; mask < (1 << mid); mask++) {
+    let sum = 0;
+    for (let i = 0; i < mid; i++) if (mask & (1 << i)) sum += SUBSET_ARR[i];
+    leftSums.set(sum, (leftSums.get(sum) || 0) + 1);
+    events.push([mask, sum, 0, 'L']);
+  }
+  for (let mask = 0; mask < (1 << (n - mid)); mask++) {
+    let sum = 0;
+    for (let i = 0; i < n - mid; i++) if (mask & (1 << i)) sum += SUBSET_ARR[mid + i];
+    events.push([mask << mid, sum, leftSums.get(SUBSET_TARGET - sum) || 0, 'R']);
+  }
+  return events;
+};
+
+const newQueensState = (n) => ({
+  board: Array(n).fill(-1), flash: null, lastSolution: null, states: 1, solutions: 0, done: false
+});
+const newSubsetState = () => ({
+  mask: 0, sum: 0, phase: null, hit: false, states: 0, solutions: 0, done: false
+});
+
+const applyQueens = (s, events) => {
+  s.flash = null;
+  for (const [type, row, col] of events) {
+    if (type === 'p') { s.board[row] = col; s.states++; s.flash = null; }
+    else if (type === 'r') { s.board[row] = -1; s.flash = null; }
+    else if (type === 'x') { s.flash = { row, col }; }
+    else { s.solutions++; s.lastSolution = [...s.board]; }
+  }
+};
+
+const applySubset = (s, events) => {
+  for (const [mask, sum, hits, phase] of events) {
+    s.mask = mask;
+    s.sum = sum;
+    s.phase = phase;
+    s.hit = hits > 0;
+    s.states++;
+    s.solutions += hits;
+  }
+};
 
 export function AdvancedComparison() {
   const [results, setResults] = useState({});
   const [running, setRunning] = useState(false);
   const [codeLanguage, setCodeLanguage] = useState('cpp');
   const [problemSize, setProblemSize] = useState(8);
+  const [frames, setFrames] = useState({});
+  const timerRef = useRef(null);
+  const animN = Math.min(problemSize, MAX_ANIM_N);
+
+  useEffect(() => () => clearInterval(timerRef.current), []);
+  
 
   // N-Queens con Backtracking Normal
   const solveNQueensBacktracking = (n) => {
@@ -178,36 +318,72 @@ export function AdvancedComparison() {
   };
 
   const compareAll = async () => {
+    clearInterval(timerRef.current);
     setRunning(true);
     setResults({});
-    
+    setFrames({});
+
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    // Comparación 1: N-Queens
-    const backtrackingResult = solveNQueensBacktracking(problemSize);
-    const bitmaskResult = solveNQueensBitmask(problemSize);
-
-    // Comparación 2: Subset Sum
-    const targetSum = 20;
-    const subsetBacktracking = solveSubsetSumBacktracking(targetSum);
-    const subsetMITM = solveSubsetSumMITM(targetSum);
-
-    setResults({
+    // Métricas reales, sin animación
+    const finalResults = {
       queens: {
-        'Backtracking Normal': backtrackingResult,
-        'Backtracking + Bitmask': bitmaskResult
+        'Backtracking Normal': solveNQueensBacktracking(problemSize),
+        'Backtracking + Bitmask': solveNQueensBitmask(problemSize)
       },
       subset: {
-        'Backtracking': subsetBacktracking,
-        'Meet in the Middle': subsetMITM
+        'Backtracking': solveSubsetSumBacktracking(SUBSET_TARGET),
+        'Meet in the Middle': solveSubsetSumMITM(SUBSET_TARGET)
       }
-    });
-    
-    setRunning(false);
+    };
+
+    // Animación
+    const traces = {
+      'Backtracking Normal': traceQueens(animN, false),
+      'Backtracking + Bitmask': traceQueens(animN, true),
+      'Backtracking': traceSubsetBacktracking(),
+      'Meet in the Middle': traceSubsetMITM()
+    };
+    const state = {
+      'Backtracking Normal': newQueensState(animN),
+      'Backtracking + Bitmask': newQueensState(animN),
+      'Backtracking': newSubsetState(),
+      'Meet in the Middle': newSubsetState()
+    };
+
+    // Todos avanzan al mismo ritmo: el que tiene menos pasos termina antes
+    const longest = Math.max(...Object.values(traces).map(t => t.length));
+    const perTick = Math.max(1, Math.ceil(longest / 300));
+    let pos = 0;
+
+    timerRef.current = setInterval(() => {
+      const next = pos + perTick;
+      const snapshot = {};
+
+      for (const [name, events] of Object.entries(traces)) {
+        const s = state[name];
+        ('board' in s ? applyQueens : applySubset)(s, events.slice(pos, next));
+        s.done = next >= events.length;
+        snapshot[name] = { ...s };
+        if (s.board) snapshot[name].board = [...s.board];
+      }
+
+      pos = next;
+      setFrames(snapshot);
+
+      if (pos >= longest) {
+        clearInterval(timerRef.current);
+        setResults(finalResults);
+        setRunning(false);
+      }
+    }, 30);
   };
 
   const clearResults = () => {
+    clearInterval(timerRef.current);
+    setRunning(false);
     setResults({});
+    setFrames({});
   };
 
   const comparisonCode = {
@@ -442,8 +618,62 @@ print(f"Soluciones: {mitm.solve(arr, 20)}")`
     navigator.clipboard.writeText(code);
   };
 
+  const renderQueens = (name) => {
+    const s = frames[name];
+    const n = s ? s.board.length : animN;
+    const board = s ? (s.done && s.lastSolution ? s.lastSolution : s.board) : Array(n).fill(-1);
+
+    return (
+      <div className="adv-board" style={{ gridTemplateColumns: `repeat(${n}, 1fr)` }}>
+        {Array.from({ length: n * n }, (_, i) => {
+          const row = Math.floor(i / n);
+          const col = i % n;
+          let cls = 'adv-cell';
+          if ((row + col) % 2) cls += ' dark';
+          if (board[row] === col) cls += ' queen';
+          else if (s?.flash && s.flash.row === row && s.flash.col === col) cls += ' reject';
+          return <div key={i} className={cls}>{board[row] === col ? '♛' : ''}</div>;
+        })}
+      </div>
+    );
+  };
+
+  const renderSubset = (name) => {
+    const s = frames[name] || newSubsetState();
+    const sumLabel =
+      s.phase === 'R' ? `Suma: ${s.sum} (complemento: ${SUBSET_TARGET - s.sum})` :
+      s.phase === 'L' ? `Suma: ${s.sum}` :
+      `Suma: ${s.sum} / ${SUBSET_TARGET}`;
+
+    return (
+      <>
+        <div className="adv-chips">
+          {SUBSET_ARR.map((v, i) => {
+            let cls = 'adv-chip';
+            if (name === 'Meet in the Middle' && i === SUBSET_ARR.length / 2) cls += ' gap';
+            if (s.mask & (1 << i)) cls += ' on';
+            if (s.hit) cls += ' hit';
+            return <div key={v} className={cls}>{v}</div>;
+          })}
+        </div>
+        <div className="adv-meta">{sumLabel}</div>
+      </>
+    );
+  };
+
+  const renderStats = (name) => {
+    const s = frames[name];
+    return (
+      <div className="adv-meta">
+        {PHASE_LABEL[s?.phase] && <div>{PHASE_LABEL[s.phase]}</div>}
+        <div>Estados: {s ? s.states : 0} | Soluciones: {s ? s.solutions : 0}</div>
+      </div>
+    );
+  };
+
   return (
     <div className="algo-container">
+      <style>{STYLES}</style>
       <h2 className="section-title">Comparación de Algoritmos Avanzados</h2>
 
       <div className="explanation-section">
@@ -492,7 +722,7 @@ print(f"Soluciones: {mitm.solve(arr, 20)}")`
             disabled={running}
           />
           <p style={{ fontSize: '0.85rem', marginTop: '0.5rem', opacity: 0.8 }}>
-            ⚠️ Tamaños mayores a 10 pueden tardar varios segundos
+            Tamaños mayores a 10 pueden tardar varios segundos
           </p>
         </div>
       </div>
@@ -506,6 +736,30 @@ print(f"Soluciones: {mitm.solve(arr, 20)}")`
         </button>
       </div>
 
+      <h3 style={{ color: '#a78bfa', marginTop: '1.5rem' }}>
+        Ejecución N-Queens ({animN}x{animN})
+      </h3>
+      <div className="adv-grids">
+        {QUEENS_ALGOS.map(name => (
+          <div key={name} className="adv-card">
+            <h4 style={{ textAlign: 'center', marginBottom: '0.5rem', color: '#60a5fa' }}>{name}</h4>
+            {renderQueens(name)}
+            {renderStats(name)}
+          </div>
+        ))}
+      </div>
+
+      <h3 style={{ color: '#a78bfa' }}>Ejecución Subset Sum (objetivo = {SUBSET_TARGET})</h3>
+      <div className="adv-grids">
+        {SUBSET_ALGOS.map(name => (
+          <div key={name} className="adv-card">
+            <h4 style={{ textAlign: 'center', marginBottom: '0.5rem', color: '#60a5fa' }}>{name}</h4>
+            {renderSubset(name)}
+            {renderStats(name)}
+          </div>
+        ))}
+      </div>
+
       {Object.keys(results).length > 0 && (
         <div className="results-section">
           <h3 style={{ color: '#a78bfa', marginBottom: '1.5rem' }}>Resultados de la Comparación</h3>
@@ -514,7 +768,7 @@ print(f"Soluciones: {mitm.solve(arr, 20)}")`
           {results.queens && (
             <div style={{ marginBottom: '2rem' }}>
               <h4 style={{ color: '#60a5fa', marginBottom: '1rem' }}>
-                🏰 N-Queens Problem ({problemSize}x{problemSize})
+                N-Queens Problem ({problemSize}x{problemSize})
               </h4>
               <div className="results-grid">
                 {Object.entries(results.queens).map(([algorithm, result]) => (
@@ -551,7 +805,7 @@ print(f"Soluciones: {mitm.solve(arr, 20)}")`
                   border: '1px solid rgba(16, 185, 129, 0.3)'
                 }}>
                   <p style={{ margin: 0 }}>
-                    ⚡ <strong>Mejora con Bitmask:</strong>{' '}
+                    <strong>Mejora con Bitmask:</strong>{' '}
                     {(
                       ((parseFloat(results.queens['Backtracking Normal'].time) - 
                         parseFloat(results.queens['Backtracking + Bitmask'].time)) / 
@@ -572,7 +826,7 @@ print(f"Soluciones: {mitm.solve(arr, 20)}")`
           {results.subset && (
             <div>
               <h4 style={{ color: '#60a5fa', marginBottom: '1rem' }}>
-                🎯 Subset Sum Problem (target = 20)
+                Subset Sum Problem (target = 20)
               </h4>
               <div className="results-grid">
                 {Object.entries(results.subset).map(([algorithm, result]) => (
@@ -609,7 +863,7 @@ print(f"Soluciones: {mitm.solve(arr, 20)}")`
                   border: '1px solid rgba(16, 185, 129, 0.3)'
                 }}>
                   <p style={{ margin: 0 }}>
-                    🚀 <strong>Mejora con Meet in the Middle:</strong>{' '}
+                    <strong>Mejora con Meet in the Middle:</strong>{' '}
                     {(
                       ((parseFloat(results.subset['Backtracking'].time) - 
                         parseFloat(results.subset['Meet in the Middle'].time)) / 
@@ -625,7 +879,7 @@ print(f"Soluciones: {mitm.solve(arr, 20)}")`
       )}
 
       <div className="explanation-section" style={{ marginTop: '2rem' }}>
-        <h3>💡 Conclusiones</h3>
+        <h3>Conclusiones</h3>
         <ul style={{ marginLeft: '2rem', lineHeight: '1.8' }}>
           <li>
             <strong>Bitmask:</strong> Usa operaciones de bits extremadamente rápidas para 

@@ -94,7 +94,7 @@ export function BranchAndBound() {
         setTreeNodes([...nodes]);
         nodesPruned++;
         setStats({ nodesExplored, nodesPruned });
-        setAnimationMessage(`❌ Nodo ${node.id} podado: bound ${node.bound.toFixed(1)} ≤ mejor valor ${maxValue}`);
+        setAnimationMessage(`Nodo ${node.id} podado: bound ${node.bound.toFixed(1)} ≤ mejor valor ${maxValue}`);
         await new Promise(resolve => setTimeout(resolve, 600));
         continue;
       }
@@ -136,7 +136,7 @@ export function BranchAndBound() {
           maxValue = leftValue;
           bestSelection = leftNode.included;
           setBestSolution({ value: maxValue, items: [...bestSelection] });
-          setAnimationMessage(`✅ ¡Nueva mejor solución! Valor: ${maxValue}`);
+          setAnimationMessage(`¡Nueva mejor solución! Valor: ${maxValue}`);
           await new Promise(resolve => setTimeout(resolve, 800));
         }
 
@@ -500,7 +500,7 @@ print(f"Valor máximo: {knapsack_branch_bound(capacity, items)}")`;
                 disabled={isAnimating || items.length <= 1}
                 className="btn btn-danger small"
               >
-                🗑️
+                Eliminar
               </button>
             </div>
           ))}
@@ -512,7 +512,7 @@ print(f"Valor máximo: {knapsack_branch_bound(capacity, items)}")`;
           className="btn btn-success"
           style={{ marginTop: '1rem' }}
         >
-          ➕ Agregar Item
+          Agregar Item
         </button>
       </div>
 
@@ -522,21 +522,21 @@ print(f"Valor máximo: {knapsack_branch_bound(capacity, items)}")`;
           onClick={solveBranchAndBound}
           disabled={isAnimating}
         >
-          {isAnimating ? '⏳ Resolviendo...' : '▶️ Resolver con Branch & Bound'}
+          {isAnimating ? 'Resolviendo...' : 'Resolver con Branch & Bound'}
         </button>
         <button
           className="btn btn-success"
           onClick={generateRandomItems}
           disabled={isAnimating}
         >
-          🎲 Generar Aleatorio
+          Generar Aleatorio
         </button>
         <button
           className="btn btn-secondary"
           onClick={resetVisualization}
           disabled={isAnimating}
         >
-          🔄 Reiniciar Visualización
+          Reiniciar Visualización
         </button>
       </div>
 

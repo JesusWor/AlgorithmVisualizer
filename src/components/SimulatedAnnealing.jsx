@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import '../styles/common.css';
 import '../styles/annealing.css';
 
@@ -10,10 +10,15 @@ export function SimulatedAnnealing() {
   const [iteration, setIteration] = useState(0);
   const [running, setRunning] = useState(false);
   const [codeLanguage, setCodeLanguage] = useState('cpp');
+  const cancelRef = useRef(false);
 
   useEffect(() => {
     generateCities();
+    return () => { cancelRef.current = true; };
   }, []);
+
+  const pathPoints = (path) =>
+    path.map(i => `${cities[i].x},${cities[i].y}`).join(' ');
 
   const generateCities = () => {
     const newCities = [];
@@ -58,8 +63,10 @@ export function SimulatedAnnealing() {
   const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
   const runSimulatedAnnealing = async () => {
+    cancelRef.current = false;
     setRunning(true);
-    let current = [...currentPath];
+
+    let current = cities.map((_, i) => i);
     let best = [...current];
     let temp = 1000;
     let iter = 0;
@@ -69,38 +76,44 @@ export function SimulatedAnnealing() {
     let currentDistance = calculateDistance(current, cities);
     let bestDistance = currentDistance;
 
+    setCurrentPath(current);
+    setBestPath(best);
+
     while (temp > 1 && iter < maxIterations) {
       const i = Math.floor(Math.random() * current.length);
       const j = Math.floor(Math.random() * current.length);
-      
+
       const newPath = swap(current, i, j);
       const newDistance = calculateDistance(newPath, cities);
-      
       const delta = newDistance - currentDistance;
-      
+
       if (delta < 0 || Math.random() < Math.exp(-delta / temp)) {
         current = newPath;
         currentDistance = newDistance;
-        
+
         if (currentDistance < bestDistance) {
           best = [...current];
           bestDistance = currentDistance;
-          setBestPath(best);
         }
       }
 
-      setCurrentPath([...current]);
-      setTemperature(temp);
-      setIteration(iter);
-      
       temp *= coolingRate;
       iter++;
 
-      if (iter % 10 === 0) {
-        await sleep(20);
+      if (iter % 5 === 0) {
+        setCurrentPath([...current]);
+        setBestPath([...best]);
+        setTemperature(temp);
+        setIteration(iter);
+        await sleep(25);
+        if (cancelRef.current) return;
       }
     }
 
+    setCurrentPath([...best]);
+    setBestPath([...best]);
+    setTemperature(temp);
+    setIteration(iter);
     setRunning(false);
   };
 
@@ -287,73 +300,48 @@ print("Distancia:", calculate_distance(best_path, cities))`;
       </div>
 
       <div className="visualization-area">
-        <svg width="600" height="400" className="tsp-canvas" viewBox="-200 0 00 400" preserveAspectRatio="xMidYMid meet">
-          {/* Dibujar camino actual */}
-          {currentPath.length > 0 && cities.length > 0 && (
+        <svg
+          width="600"
+          height="400"
+          className="tsp-canvas"
+          viewBox="0 0 600 400"
+          preserveAspectRatio="xMidYMid meet"
+          style={{ maxWidth: '100%', height: 'auto' }}
+        >
+          {cities.length > 0 && currentPath.length === cities.length && (
             <>
-              {currentPath.map((cityIndex, i) => {
-                if (i === currentPath.length - 1) {
-                  const city1 = cities[cityIndex];
-                  const city2 = cities[currentPath[0]];
-                  return (
-                    <line
-                      key={`line-${i}`}
-                      x1={city1.x}
-                      y1={city1.y}
-                      x2={city2.x}
-                      y2={city2.y}
-                      stroke="#64748b"
-                      strokeWidth="2"
-                      opacity="0.5"
-                    />
-                  );
-                }
-                const city1 = cities[cityIndex];
-                const city2 = cities[currentPath[i + 1]];
-                return (
-                  <line
-                    key={`line-${i}`}
-                    x1={city1.x}
-                    y1={city1.y}
-                    x2={city2.x}
-                    y2={city2.y}
-                    stroke="#64748b"
-                    strokeWidth="2"
-                    opacity="0.5"
-                  />
-                );
-              })}
+              <polygon
+                points={pathPoints(currentPath)}
+                fill="none"
+                stroke="#64748b"
+                strokeWidth="2"
+                opacity="0.6"
+              />
+              <polygon
+                points={pathPoints(bestPath)}
+                fill="none"
+                stroke="#10b981"
+                strokeWidth="3"
+                strokeDasharray="6 4"
+              />
             </>
           )}
 
-          {/* Dibujar ciudades */}
           {cities.map((city, index) => (
             <g key={`city-${index}`}>
-              <circle
-                cx={city.x}
-                cy={city.y}
-                r="8"
-                fill="#667eea"
-                stroke="#a78bfa"
-                strokeWidth="2"
-              />
-              <text
-                x={city.x}
-                y={city.y - 15}
-                textAnchor="middle"
-                fill="#e2e8f0"
-                fontSize="12"
-                fontWeight="bold"
-              >
+              <circle cx={city.x} cy={city.y} r="8" fill="#667eea" stroke="#a78bfa" strokeWidth="2" />
+              <text x={city.x} y={city.y - 15} textAnchor="middle" fill="#e2e8f0" fontSize="12" fontWeight="bold">
                 {index}
               </text>
             </g>
           ))}
         </svg>
         <div className="distance-display">
-          Distancia actual: {cities.length > 0 ? calculateDistance(currentPath, cities).toFixed(2) : 0}
+          <b>Gris:</b> ruta actual | Verde punteado: mejor ruta
           <br />
-          Mejor distancia: {cities.length > 0 ? calculateDistance(bestPath, cities).toFixed(2) : 0}
+          <b>Distancia actual:</b> {cities.length > 0 ? calculateDistance(currentPath, cities).toFixed(2) : 0}
+          <br />
+          <b>Mejor distancia:</b> {cities.length > 0 ? calculateDistance(bestPath, cities).toFixed(2) : 0}
         </div>
       </div>
 
