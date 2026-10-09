@@ -14,19 +14,37 @@ export function AlgorithmComparison() {
   const [codeLanguage, setCodeLanguage] = useState('cpp');
   const [visualizations, setVisualizations] = useState({});
   const [isDrawing, setIsDrawing] = useState(false);
-  const animationRef = useRef({});
+  const timerRef = useRef(null);
+
+  const STYLES = `
+    .cmp-grids { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin: 1.5rem 0; }
+    .cmp-card { background: rgba(15, 23, 42, 0.6); border-radius: 8px; padding: 0.75rem; }
+    .cmp-grid { display: grid; gap: 1px; background: #0f172a; border: 1px solid #334155; user-select: none; }
+    .cmp-cell { aspect-ratio: 1; background: #1e293b; }
+    .cmp-cell.wall { background: #94a3b8; }
+    .cmp-cell.start { background: #10b981; }
+    .cmp-cell.end { background: #ef4444; }
+    .cmp-cell.visited { background: #7c6bd6; animation: cmp-visit 0.5s ease-out; }
+    .cmp-cell.path { background: #fbbf24; animation: cmp-path 0.4s ease-out; }
+    .cmp-count { margin-top: 0.5rem; font-size: 0.85rem; color: #94a3b8; text-align: center; }
+    @keyframes cmp-visit {
+      0% { transform: scale(0.3); background: #38bdf8; border-radius: 50%; }
+      60% { background: #38bdf8; }
+      100% { transform: scale(1); background: #7c6bd6; border-radius: 0; }
+    }
+    @keyframes cmp-path {
+      0% { transform: scale(0.5); }
+      60% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+  `;
 
   useEffect(() => {
     initializeGrid();
   }, []);
 
-  useEffect(() => {
-    return () => {
-      Object.values(animationRef.current).forEach(ref => {
-        if (ref) cancelAnimationFrame(ref);
-      });
-    };
-  }, []);
+ useEffect(() => () => clearInterval(timerRef.current), []);
+  const key = (row, col) => `${row}-${col}`
 
   const initializeGrid = () => {
     const newGrid = [];
@@ -39,381 +57,125 @@ export function AlgorithmComparison() {
     }
     setGrid(newGrid);
   };
+;
 
-  const heuristic = (a, b) => {
-    return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
-  };
+  const heuristic = (a, b) => Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
 
-  const getNeighbors = (node) => {
-    const neighbors = [];
-    const directions = [
-      { row: -1, col: 0 },
-      { row: 1, col: 0 },
-      { row: 0, col: -1 },
-      { row: 0, col: 1 }
-    ];
+  const getNeighbors = (node) =>
+    [[-1, 0], [1, 0], [0, -1], [0, 1]]
+      .map(([dr, dc]) => ({ row: node.row + dr, col: node.col + dc }))
+      .filter(n =>
+        n.row >= 0 && n.row < ROWS && n.col >= 0 && n.col < COLS &&
+        !walls.has(key(n.row, n.col))
+      );
 
-    for (const dir of directions) {
-      const newRow = node.row + dir.row;
-      const newCol = node.col + dir.col;
+  // Búsqueda genérica: solo cambia la prioridad según el algoritmo
+  const search = (mode) => {
+    const t0 = performance.now();
+    const score = (n) => {
+      if (mode === 'astar') return n.g + heuristic(n, end);
+      if (mode === 'greedy') return heuristic(n, end);
+      if (mode === 'dijkstra') return n.g;
+      return 0; // BFS: sin prioridad, sale el primero en entrar (FIFO)
+    };
 
-      if (newRow >= 0 && newRow < ROWS && newCol >= 0 && newCol < COLS) {
-        const key = `${newRow}-${newCol}`;
-        if (!walls.has(key)) {
-          neighbors.push({ row: newRow, col: newCol });
-        }
-      }
-    }
-    return neighbors;
-  };
-
-  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-  const runAStarAnimated = async (algorithmName) => {
-    const startTime = performance.now();
-    const openSet = [{ ...start, g: 0, h: heuristic(start, end) }];
-    openSet[0].f = openSet[0].g + openSet[0].h;
-    
-    const openSetKeys = new Set([`${start.row}-${start.col}`]);
-    const closedSet = new Set();
+    const open = [{ ...start, g: 0 }];
+    const bestG = new Map([[key(start.row, start.col), 0]]);
     const cameFrom = new Map();
-    const gScore = new Map();
+    const closed = new Set();
+    const order = [];
 
-    const startKey = `${start.row}-${start.col}`;
-    gScore.set(startKey, 0);
-    let nodesExplored = 0;
-    const visitedSet = new Set();
-
-    while (openSet.length > 0) {
-      // Encontrar el nodo con menor f-score
-      let currentIndex = 0;
-      for (let i = 1; i < openSet.length; i++) {
-        if (openSet[i].f < openSet[currentIndex].f) {
-          currentIndex = i;
-        }
+    while (open.length > 0) {
+      let best = 0;
+      for (let i = 1; i < open.length; i++) {
+        if (score(open[i]) < score(open[best])) best = i;
       }
-
-      const current = openSet[currentIndex];
-      const currentKey = `${current.row}-${current.col}`;
-
-      // Verificar si llegamos al destino
-      if (current.row === end.row && current.col === end.col) {
-        const path = [];
-        let temp = { row: current.row, col: current.col };
-        while (temp) {
-          path.unshift(temp);
-          const key = `${temp.row}-${temp.col}`;
-          temp = cameFrom.get(key);
-        }
-        const endTime = performance.now();
-        
-        setVisualizations(prev => ({
-          ...prev,
-          [algorithmName]: { visited: visitedSet, path: new Set(path.map(p => `${p.row}-${p.col}`)) }
-        }));
-
-        return {
-          path,
-          nodesExplored,
-          time: (endTime - startTime).toFixed(2),
-          pathLength: path.length
-        };
-      }
-
-      // Remover current de openSet
-      openSet.splice(currentIndex, 1);
-      openSetKeys.delete(currentKey);
-      closedSet.add(currentKey);
-      nodesExplored++;
-      
-      visitedSet.add(currentKey);
-      setVisualizations(prev => ({
-        ...prev,
-        [algorithmName]: { visited: new Set(visitedSet), path: new Set() }
-      }));
-      await sleep(20);
-
-      // Explorar vecinos
-      const neighbors = getNeighbors(current);
-      for (const neighbor of neighbors) {
-        const neighborKey = `${neighbor.row}-${neighbor.col}`;
-
-        if (closedSet.has(neighborKey)) continue;
-
-        const tentativeG = gScore.get(currentKey) + 1;
-
-        if (!gScore.has(neighborKey) || tentativeG < gScore.get(neighborKey)) {
-          cameFrom.set(neighborKey, { row: current.row, col: current.col });
-          gScore.set(neighborKey, tentativeG);
-          
-          const h = heuristic(neighbor, end);
-          const f = tentativeG + h;
-
-          if (!openSetKeys.has(neighborKey)) {
-            openSet.push({ row: neighbor.row, col: neighbor.col, g: tentativeG, h: h, f: f });
-            openSetKeys.add(neighborKey);
-          } else {
-            const idx = openSet.findIndex(n => n.row === neighbor.row && n.col === neighbor.col);
-            if (idx !== -1 && tentativeG < openSet[idx].g) {
-              openSet[idx].g = tentativeG;
-              openSet[idx].f = f;
-            }
-          }
-        }
-      }
-    }
-
-    const endTime = performance.now();
-    return {
-      path: [],
-      nodesExplored,
-      time: (endTime - startTime).toFixed(2),
-      pathLength: 0
-    };
-  };
-
-  const runDijkstraAnimated = async (algorithmName) => {
-    const startTime = performance.now();
-    const distances = new Map();
-    const previous = new Map();
-    const pQueue = [{ ...start, dist: 0 }];
-    const visited = new Set();
-    
-    const startKey = `${start.row}-${start.col}`;
-    distances.set(startKey, 0);
-    let nodesExplored = 0;
-    const visitedSet = new Set();
-
-    while (pQueue.length > 0) {
-      // Ordenar por distancia (menor primero)
-      pQueue.sort((a, b) => a.dist - b.dist);
-      
-      const current = pQueue.shift();
-      const currentKey = `${current.row}-${current.col}`;
-      
-      // Si ya visitamos este nodo, continuar
-      if (visited.has(currentKey)) continue;
-      visited.add(currentKey);
-      
-      nodesExplored++;
-      visitedSet.add(currentKey);
-      setVisualizations(prev => ({
-        ...prev,
-        [algorithmName]: { visited: new Set(visitedSet), path: new Set() }
-      }));
-      await sleep(20);
-
-      // Si llegamos al destino
-      if (current.row === end.row && current.col === end.col) {
-        const path = [];
-        let temp = { row: current.row, col: current.col };
-        while (temp) {
-          path.unshift(temp);
-          const key = `${temp.row}-${temp.col}`;
-          temp = previous.get(key);
-        }
-        const endTime = performance.now();
-        
-        setVisualizations(prev => ({
-          ...prev,
-          [algorithmName]: { visited: visitedSet, path: new Set(path.map(p => `${p.row}-${p.col}`)) }
-        }));
-
-        return {
-          path,
-          nodesExplored,
-          time: (endTime - startTime).toFixed(2),
-          pathLength: path.length
-        };
-      }
-
-      // Explorar vecinos
-      const neighbors = getNeighbors(current);
-      for (const neighbor of neighbors) {
-        const neighborKey = `${neighbor.row}-${neighbor.col}`;
-        
-        // Si ya visitamos este vecino, continuar
-        if (visited.has(neighborKey)) continue;
-        
-        const currentDist = distances.get(currentKey) || 0;
-        const newDist = currentDist + 1;
-        const oldDist = distances.get(neighborKey) || Infinity;
-
-        if (newDist < oldDist) {
-          distances.set(neighborKey, newDist);
-          previous.set(neighborKey, { row: current.row, col: current.col });
-          pQueue.push({ row: neighbor.row, col: neighbor.col, dist: newDist });
-        }
-      }
-    }
-
-    const endTime = performance.now();
-    return {
-      path: [],
-      nodesExplored,
-      time: (endTime - startTime).toFixed(2),
-      pathLength: 0
-    };
-  };
-
-  const runBFSAnimated = async (algorithmName) => {
-    const startTime = performance.now();
-    const queue = [start];
-    const visited = new Set();
-    const previous = new Map();
-    let nodesExplored = 0;
-
-    const startKey = `${start.row}-${start.col}`;
-    visited.add(startKey);
-
-    while (queue.length > 0) {
-      const current = queue.shift();
-      const currentKey = `${current.row}-${current.col}`;
-      nodesExplored++;
-
-      setVisualizations(prev => ({
-        ...prev,
-        [algorithmName]: { visited: new Set(visited), path: new Set() }
-      }));
-      await sleep(20);
+      const current = open.splice(best, 1)[0];
+      const currentKey = key(current.row, current.col);
+      if (closed.has(currentKey)) continue;
+      closed.add(currentKey);
+      order.push(currentKey);
 
       if (current.row === end.row && current.col === end.col) {
         const path = [];
-        let temp = current;
-        while (temp) {
-          path.unshift(temp);
-          const key = `${temp.row}-${temp.col}`;
-          temp = previous.get(key);
+        let k = currentKey;
+        while (k) {
+          path.unshift(k);
+          k = cameFrom.get(k);
         }
-        const endTime = performance.now();
-        
-        setVisualizations(prev => ({
-          ...prev,
-          [algorithmName]: { visited, path: new Set(path.map(p => `${p.row}-${p.col}`)) }
-        }));
-
-        return {
-          path,
-          nodesExplored,
-          time: (endTime - startTime).toFixed(2),
-          pathLength: path.length
-        };
+        return { order, path, time: (performance.now() - t0).toFixed(2) };
       }
 
-      const neighbors = getNeighbors(current);
-      for (const neighbor of neighbors) {
-        const neighborKey = `${neighbor.row}-${neighbor.col}`;
-        if (!visited.has(neighborKey)) {
-          visited.add(neighborKey);
-          previous.set(neighborKey, current);
-          queue.push(neighbor);
+      for (const n of getNeighbors(current)) {
+        const nKey = key(n.row, n.col);
+        const g = current.g + 1;
+        if (closed.has(nKey)) continue;
+        if (!bestG.has(nKey) || g < bestG.get(nKey)) {
+          bestG.set(nKey, g);
+          cameFrom.set(nKey, currentKey);
+          open.push({ ...n, g });
         }
       }
     }
-
-    const endTime = performance.now();
-    return {
-      path: [],
-      nodesExplored,
-      time: (endTime - startTime).toFixed(2),
-      pathLength: 0
-    };
+    return { order, path: [], time: (performance.now() - t0).toFixed(2) };
   };
 
-  const runGreedyAnimated = async (algorithmName) => {
-    const startTime = performance.now();
-    const openSet = [start];
-    const visited = new Set();
-    const previous = new Map();
-    let nodesExplored = 0;
-
-    while (openSet.length > 0) {
-      openSet.sort((a, b) => heuristic(a, end) - heuristic(b, end));
-      
-      const current = openSet.shift();
-      const currentKey = `${current.row}-${current.col}`;
-      
-      if (visited.has(currentKey)) continue;
-      visited.add(currentKey);
-      nodesExplored++;
-
-      setVisualizations(prev => ({
-        ...prev,
-        [algorithmName]: { visited: new Set(visited), path: new Set() }
-      }));
-      await sleep(20);
-
-      if (current.row === end.row && current.col === end.col) {
-        const path = [];
-        let temp = current;
-        while (temp) {
-          path.unshift(temp);
-          const key = `${temp.row}-${temp.col}`;
-          temp = previous.get(key);
-        }
-        const endTime = performance.now();
-        
-        setVisualizations(prev => ({
-          ...prev,
-          [algorithmName]: { visited, path: new Set(path.map(p => `${p.row}-${p.col}`)) }
-        }));
-
-        return {
-          path,
-          nodesExplored,
-          time: (endTime - startTime).toFixed(2),
-          pathLength: path.length
-        };
-      }
-
-      const neighbors = getNeighbors(current);
-      for (const neighbor of neighbors) {
-        const neighborKey = `${neighbor.row}-${neighbor.col}`;
-        if (!visited.has(neighborKey)) {
-          previous.set(neighborKey, current);
-          openSet.push(neighbor);
-        }
-      }
-    }
-
-    const endTime = performance.now();
-    return {
-      path: [],
-      nodesExplored,
-      time: (endTime - startTime).toFixed(2),
-      pathLength: 0
-    };
+  const ALGORITHMS = {
+    'A*': 'astar',
+    'Dijkstra': 'dijkstra',
+    'BFS': 'bfs',
+    'Greedy Best-First': 'greedy'
   };
 
-  const compareAll = async () => {
+  const compareAll = () => {
+    clearInterval(timerRef.current);
+    const runs = Object.fromEntries(
+      Object.entries(ALGORITHMS).map(([name, mode]) => [name, search(mode)])
+    );
+
     setRunning(true);
     setResults({});
     setVisualizations({});
-    
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
-    // Ejecutar todos simultáneamente
-    const [aStarResult, dijkstraResult, bfsResult, greedyResult] = await Promise.all([
-      runAStarAnimated('A*'),
-      runDijkstraAnimated('Dijkstra'),
-      runBFSAnimated('BFS'),
-      runGreedyAnimated('Greedy Best-First')
-    ]);
 
-    setResults({
-      'A*': aStarResult,
-      'Dijkstra': dijkstraResult,
-      'BFS': bfsResult,
-      'Greedy Best-First': greedyResult
-    });
-    setRunning(false);
+    let step = 0;
+    timerRef.current = setInterval(() => {
+      step++;
+      const frame = {};
+      let finished = true;
+
+      for (const [name, run] of Object.entries(runs)) {
+        const explored = run.order.length;
+        const pathShown = Math.max(0, step - explored);
+        if (pathShown < run.path.length || step < explored) finished = false;
+        frame[name] = {
+          visited: new Set(run.order.slice(0, step)),
+          path: new Set(run.path.slice(0, pathShown))
+        };
+      }
+
+      setVisualizations(frame);
+
+      if (finished) {
+        clearInterval(timerRef.current);
+        setResults(Object.fromEntries(
+          Object.entries(runs).map(([name, run]) => [name, {
+            nodesExplored: run.order.length,
+            pathLength: run.path.length,
+            time: run.time
+          }]
+        )));
+        setRunning(false);
+      }
+    }, 30);
   };
 
   const clearResults = () => {
+    clearInterval(timerRef.current);
+    setRunning(false);
     setResults({});
     setVisualizations({});
     setWalls(new Set());
-    initializeGrid();
+    izeGrid();
   };
 
   const handleMouseDown = (row, col) => {
@@ -445,44 +207,34 @@ export function AlgorithmComparison() {
     });
   };
 
-  const renderGrid = (algorithmName) => {
-    const vis = visualizations[algorithmName] || { visited: new Set(), path: new Set() };
-    
+  const renderGrid = (name) => {
+    const vis = visualizations[name] || { visited: new Set(), path: new Set() };
+
     return (
-      <div 
-        className="mini-grid-container"
+      <div
+        className="cmp-grid"
+        style={{ gridTemplateColumns: `repeat(${COLS}, 1fr)` }}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       >
-        {grid.map((row, rowIndex) => (
-          <div key={rowIndex} className="grid-row">
-            {row.map((cell, colIndex) => {
-              const key = `${rowIndex}-${colIndex}`;
-              let cellClass = 'mini-cell';
-              
-              if (rowIndex === start.row && colIndex === start.col) {
-                cellClass += ' start';
-              } else if (rowIndex === end.row && colIndex === end.col) {
-                cellClass += ' end';
-              } else if (walls.has(key)) {
-                cellClass += ' wall';
-              } else if (vis.path.has(key)) {
-                cellClass += ' path';
-              } else if (vis.visited.has(key)) {
-                cellClass += ' visited';
-              }
+        {grid.flat().map(({ row, col }) => {
+          const k = `${row}-${col}`;
+          let cls = 'cmp-cell';
+          if (row === start.row && col === start.col) cls += ' start';
+          else if (row === end.row && col === end.col) cls += ' end';
+          else if (walls.has(k)) cls += ' wall';
+          else if (vis.path.has(k)) cls += ' path';
+          else if (vis.visited.has(k)) cls += ' visited';
 
-              return (
-                <div
-                  key={colIndex}
-                  className={cellClass}
-                  onMouseDown={() => !running && handleMouseDown(rowIndex, colIndex)}
-                  onMouseEnter={() => !running && handleMouseEnter(rowIndex, colIndex)}
-                />
-              );
-            })}
-          </div>
-        ))}
+          return (
+            <div
+              key={k}
+              className={cls}
+              onMouseDown={() => !running && handleMouseDown(row, col)}
+              onMouseEnter={() => !running && handleMouseEnter(row, col)}
+            />
+          );
+        })}
       </div>
     );
   };
@@ -1027,6 +779,7 @@ pf.compare_all()`
 
   return (
     <div className="algo-container">
+      <style>{STYLES}</style>
       <h2 className="section-title">Comparación de Algoritmos de Búsqueda</h2>
 
       <div className="explanation-section">
@@ -1056,7 +809,7 @@ pf.compare_all()`
             cursor: running ? 'not-allowed' : 'pointer'
           }}
         >
-          {running ? '⏳ Comparando...' : '🔬 Comparar Todos'}
+          {running ? 'Comparando...' : 'Comparar Todos'}
         </button>
         <button 
           className="btn btn-secondary" 
@@ -1067,7 +820,7 @@ pf.compare_all()`
             cursor: running ? 'not-allowed' : 'pointer'
           }}
         >
-          🗑️ Limpiar
+          Limpiar
         </button>
       </div>
 
@@ -1080,7 +833,7 @@ pf.compare_all()`
           border: '2px solid rgba(16, 185, 129, 0.3)'
         }}>
           <p style={{ margin: 0, color: '#10b981', fontWeight: '600' }}>
-            🔄 Ejecutando algoritmos simultáneamente... Observa cómo cada uno explora el espacio de búsqueda.
+            Ejecutando algoritmos simultáneamente... Observa cómo cada uno explora el espacio de búsqueda.
           </p>
         </div>
       )}
@@ -1100,9 +853,9 @@ pf.compare_all()`
                 borderRadius: '6px',
                 fontSize: '0.85rem'
               }}>
-                <div>⏱️ {results[algorithm].time} ms</div>
-                <div>🔍 {results[algorithm].nodesExplored} nodos</div>
-                <div>📏 Camino: {results[algorithm].pathLength}</div>
+                <div>{results[algorithm].time} ms</div>
+                <div>{results[algorithm].nodesExplored} nodos</div>
+                <div>Camino: {results[algorithm].pathLength}</div>
               </div>
             )}
           </div>
@@ -1151,7 +904,7 @@ pf.compare_all()`
               <h4 style={{ color: '#10b981', marginBottom: '0.5rem' }}>📈 Análisis Comparativo</h4>
               <ul style={{ marginLeft: '1.5rem', lineHeight: '1.8' }}>
                 <li>
-                  <strong>⚡ Más rápido:</strong>{' '}
+                  <strong>Más rápido:</strong>{' '}
                   {Object.entries(results).reduce((fastest, [name, data]) => 
                     parseFloat(data.time) < parseFloat(fastest[1].time) ? [name, data] : fastest
                   )[0]} con {Object.entries(results).reduce((fastest, [name, data]) => 
@@ -1159,7 +912,7 @@ pf.compare_all()`
                   )[1].time} ms
                 </li>
                 <li>
-                  <strong>🎯 Menos nodos explorados:</strong>{' '}
+                  <strong>Menos nodos explorados:</strong>{' '}
                   {Object.entries(results).reduce((min, [name, data]) => 
                     data.nodesExplored < min[1].nodesExplored ? [name, data] : min
                   )[0]} con {Object.entries(results).reduce((min, [name, data]) => 
@@ -1167,7 +920,7 @@ pf.compare_all()`
                   )[1].nodesExplored} nodos
                 </li>
                 <li>
-                  <strong>💡 Conclusión:</strong> A* combina lo mejor de ambos mundos: 
+                  <strong>Conclusión:</strong> A* combina lo mejor de ambos mundos: 
                   la optimalidad de Dijkstra con la eficiencia dirigida por heurística de Greedy Best-First,
                   explorando menos nodos mientras garantiza encontrar el camino más corto.
                 </li>

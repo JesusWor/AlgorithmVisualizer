@@ -430,7 +430,7 @@ print()`
             cursor: running ? 'not-allowed' : 'pointer'
           }}
         >
-          {running ? '⏳ Ejecutando...' : '▶️ Ejecutar A*'}
+          {running ? 'Ejecutando...' : 'Ejecutar A*'}
         </button>
         <button 
           className="btn btn-secondary" 
@@ -441,7 +441,7 @@ print()`
             cursor: running ? 'not-allowed' : 'pointer'
           }}
         >
-          🗑️ Limpiar Camino
+          Limpiar Camino
         </button>
         <button 
           className="btn btn-danger" 
@@ -452,7 +452,7 @@ print()`
             cursor: running ? 'not-allowed' : 'pointer'
           }}
         >
-          🔄 Limpiar Todo
+          Limpiar Todo
         </button>
       </div>
 
@@ -462,7 +462,7 @@ print()`
         borderRadius: '8px'
       }}>
         <p style={{ margin: 0, fontSize: '0.9rem' }}>
-          🖱️ Arrastra el mouse para dibujar muros. <strong style={{ color: '#10b981' }}>Verde</strong> = Inicio, 
+          Arrastra el mouse para dibujar muros. <strong style={{ color: '#10b981' }}>Verde</strong> = Inicio, 
           <strong style={{ color: '#ef4444' }}> Rojo</strong> = Destino, 
           <strong style={{ color: '#3b82f6' }}> Azul</strong> = Visitado, 
           <strong style={{ color: '#8b5cf6' }}> Morado</strong> = Camino
@@ -518,12 +518,12 @@ print()`
           border: '2px solid rgba(16, 185, 129, 0.3)'
         }}>
           <p style={{ margin: 0, color: '#10b981' }}>
-            ✅ <strong>¡Camino encontrado exitosamente!</strong>
+            <strong>¡Camino encontrado exitosamente!</strong>
           </p>
           <p style={{ margin: '0.5rem 0 0 0' }}>
-            📏 <strong>Longitud del camino:</strong> {path.length} pasos | 
-            🔍 <strong>Nodos visitados:</strong> {visited.size} | 
-            ⚡ <strong>Eficiencia:</strong> {((path.length / visited.size) * 100).toFixed(1)}%
+            <strong>Longitud del camino:</strong> {path.length} pasos | 
+            <strong>Nodos visitados:</strong> {visited.size} | 
+            <strong>Eficiencia:</strong> {((path.length / visited.size) * 100).toFixed(1)}%
           </p>
         </div>
       )}
@@ -537,7 +537,7 @@ print()`
           border: '2px solid rgba(239, 68, 68, 0.3)'
         }}>
           <p style={{ margin: 0, color: '#ef4444' }}>
-            ❌ <strong>No se encontró un camino.</strong> Intenta reducir la cantidad de muros.
+            <strong>No se encontró un camino.</strong> Intenta reducir la cantidad de muros.
           </p>
         </div>
       )}

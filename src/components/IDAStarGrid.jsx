@@ -444,7 +444,7 @@ print()`
         borderRadius: '8px'
       }}>
         <p style={{ margin: 0, fontSize: '0.9rem' }}>
-          🖱️ Arrastra el mouse para dibujar muros. <strong style={{ color: '#10b981' }}>Verde</strong> = Inicio, 
+          Arrastra el mouse para dibujar muros. <strong style={{ color: '#10b981' }}>Verde</strong> = Inicio, 
           <strong style={{ color: '#ef4444' }}> Rojo</strong> = Destino, 
           <strong style={{ color: '#3b82f6' }}> Azul</strong> = Visitado, 
           <strong style={{ color: '#8b5cf6' }}> Morado</strong> = Camino
@@ -499,7 +499,7 @@ print()`
           marginTop: '1rem'
         }}>
           <p style={{ margin: 0 }}>
-            ✨ <strong>Camino encontrado:</strong> {path.length} pasos | 
+            <strong>Camino encontrado:</strong> {path.length} pasos | 
             <strong> Iteraciones totales:</strong> {iterations + 1} |
             <strong> Nodos visitados:</strong> {visited.size}
           </p>

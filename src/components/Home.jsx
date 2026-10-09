@@ -93,7 +93,7 @@ export function Home({ onSelectAlgorithm }) {
           complexity: 'O((V+E) log V)'
         },
         {
-          id: 'ida',
+          id: 'idastar',
           name: 'IDA* (Iterative Deepening A*)',
           description: 'Variante de A* que optimiza el uso de memoria',
           icon: '🔄',
@@ -268,10 +268,9 @@ export function Home({ onSelectAlgorithm }) {
                   onClick={() => handleCardClick(item.id)}
                   style={{ '--card-color': category.color }}
                 >
-                  <div className="card-icon" style={{ background: category.color }}>
+                  {/* <div className="card-icon" style={{ background: category.color }}>
                     <span>{item.icon}</span>
-                  </div>
-                  {item.isNew && <div className="new-badge">Nuevo</div>}
+                  </div> */}
                   <div className="card-content">
                     <h3 className="card-title">{item.name}</h3>
                     <p className="card-description">{item.description}</p>
