@@ -5,36 +5,47 @@ import { Home } from './components/Home';
 import { LinkedList } from './components/LinkedList';
 import { BinarySearchTree } from './components/BinarySearchTree';
 import { AVLTree } from './components/AVLTree';
-import { SortingAlgorithms } from './components/SortingAlgorithms';
 import { SearchAlgorithms } from './components/SearchAlgorithms';
+import { SortingAlgorithms } from './components/SortingAlgorithms';
 import { AStarGrid } from './components/AStarGrid';
 import { IDAStarGrid } from './components/IDAStarGrid';
+import { BreadthFirstSearch } from './components/BFS';
+import { DepthFirstSearch } from './components/DFS';
+import { Dijkstra } from './components/Dijkstra';
 import { Backtracking } from './components/Backtracking';
 import { BacktrackingBitmask } from './components/BacktrackingBitmask';
-import { AlgorithmComparison } from './components/AlgorithmComparison';
-import { AdvancedComparison } from './components/AdvancedComparison';
+import { BranchAndBound } from './components/BranchAndBound';
+import { MeetInTheMiddle } from './components/MeetInTheMiddle';
 import { SimulatedAnnealing } from './components/SimulatedAnnealing';
 import HillClimbing from './components/HillClimbing';
-import { MeetInTheMiddle } from './components/MeetInTheMiddle';
 import { VoronoiDiagram } from './components/VoronoiDiagram';
-import { BranchAndBound } from './components/BranchAndBound';
+import { AlgorithmComparison } from './components/AlgorithmComparison';
+import { AdvancedComparison } from './components/AdvancedComparison';
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [selectedAlgorithm, setSelectedAlgorithm] = useState(null);
 
   const tabs = [
-    { id: 'home', label: '🏠 Inicio' },
+    { id: 'home', label: 'Inicio' },
+    // Estructuras de datos
     { id: 'linkedlist', label: 'Lista Enlazada' },
     { id: 'bst', label: 'BST' },
-    { id: 'avl', label: 'AVL' },
+    { id: 'avl', label: 'AVL' }, 
+    // Algoritmos de busqueda
+    { id: 'binarysearch', label: 'Búsqueda Binaria' },
+    { id: 'sequential', label: 'Búsqueda Secuencial' },
+    // Algoritmos de ordenamiento
     { id: 'mergesort', label: 'Merge sort' },
     { id: 'quicksort', label: 'Quick sort' },
     { id: 'bubblesort', label: 'Bubble sort' },
-    { id: 'binarysearch', label: 'Búsqueda Binaria' },
-    { id: 'sequential', label: 'Búsqueda Secuencial' },
+    // Algoritmos de busqueda en grafos
     { id: 'astar', label: 'A*' },
     { id: 'idastar', label: 'IDA*' },
+    { id: 'bfs', label: 'BFS'},
+    { id: 'dfs', label: 'DFS'},
+    { id: "dijkstra", label: 'Dijkstra'},
+    // Algoritmos avanzados
     { id: 'backtracking', label: 'Backtracking' },
     { id: 'backtracking-bitmask', label: 'Backtracking Bitmask' },
     { id: 'branchandbound', label: 'Branch and Bound' },
@@ -42,6 +53,7 @@ function App() {
     { id: 'annealing', label: 'Simulated Annealing' },
     { id: 'hillclimbing', label: 'Hill Climbing' },
     { id: 'voronoi', label: 'Voronoi' },
+    // Comparacion
     { id: 'comparison', label: 'Comparación' },
     { id: 'advanced-comparison', label: 'Comparación Avanzada' },
   ];
@@ -85,20 +97,26 @@ function App() {
         return <BinarySearchTree />
       case 'avl':
         return <AVLTree />
+      case 'binarysearch':
+        return <SearchAlgorithms initialAlgorithm="binary" />
+      case 'sequential':
+        return <SearchAlgorithms initialAlgorithm="sequential" />
       case 'mergesort':
         return <SortingAlgorithms initialAlgorithm="merge" />
       case 'quicksort':
         return <SortingAlgorithms initialAlgorithm="quick" />
       case 'bubblesort':
         return <SortingAlgorithms initialAlgorithm="bubble" />
-      case 'binarysearch':
-        return <SearchAlgorithms initialAlgorithm="binary" />
-      case 'sequential':
-        return <SearchAlgorithms initialAlgorithm="sequential" />
       case 'astar':
         return <AStarGrid />
       case 'idastar':
         return <IDAStarGrid />
+      case 'bfs':
+        return <BreadthFirstSearch />
+      case 'dfs':
+        return <DepthFirstSearch />
+      case 'dijkstra':
+        return <Dijkstra />
       case 'backtracking':
         return <Backtracking />
       case 'backtracking-bitmask':
@@ -107,10 +125,10 @@ function App() {
         return <BranchAndBound />
       case 'mitm':
         return <MeetInTheMiddle />
-      case 'annealing':
-        return <SimulatedAnnealing />
       case 'hillclimbing':
         return <HillClimbing />;
+      case 'annealing':
+        return <SimulatedAnnealing />
       case 'voronoi':
         return <VoronoiDiagram />
       case 'comparison':
