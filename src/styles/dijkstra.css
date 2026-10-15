@@ -1,0 +1,184 @@
+/* Algoritmo de Dijkstra */
+
+.dij-panel {
+  width: 100%;
+  padding: 2rem;
+}
+
+.dij-hint {
+  text-align: center;
+  opacity: 0.7;
+  margin-top: 1rem;
+}
+
+.dij-steps {
+  margin-left: 2rem;
+  line-height: 1.8;
+}
+
+.dij-speed {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #e2e8f0;
+}
+
+.dij-speed input {
+  accent-color: #a78bfa;
+}
+
+/* Leyenda */
+.dij-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.dij-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.dij-legend i {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+}
+
+/* Colores de estado (compartidos por la leyenda y la cuadrícula) */
+.dij-cell.start,    .dij-legend .start    { background: #10b981; }
+.dij-cell.end,      .dij-legend .end      { background: #ef4444; }
+.dij-cell.wall,     .dij-legend .wall     { background: #94a3b8; }
+.dij-cell.heavy,    .dij-legend .heavy    { background: #92400e; }
+.dij-cell.frontier, .dij-legend .frontier { background: #38bdf8; }
+.dij-cell.current,  .dij-legend .current  { background: #f472b6; }
+.dij-cell.visited,  .dij-legend .visited  { background: #7c6bd6; }
+.dij-cell.path,     .dij-legend .path     { background: #fbbf24; }
+
+/* Cuadrícula */
+.dij-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  gap: 1px;
+  max-width: 800px;
+  margin: 0 auto;
+  background: #0f172a;
+  border: 1px solid #334155;
+  user-select: none;
+}
+
+.dij-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  background: #1e293b;
+  color: #fde68a;
+  font-size: 0.65rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.dij-cell.current {
+  animation: dij-pulse 0.3s ease-out;
+}
+
+@keyframes dij-pulse {
+  0% { transform: scale(1.6); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dij-cell.current { animation: none; }
+}
+
+/* Estadísticas */
+.dij-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  margin: 1rem 0;
+  color: #e2e8f0;
+}
+
+.dij-stats strong {
+  color: #a78bfa;
+}
+
+/* Cola de prioridad */
+.dij-queue {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.dij-queue-title {
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.dij-queue-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  min-height: 34px;
+}
+
+.dij-chip {
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #1e293b;
+  color: #e2e8f0;
+  font-size: 0.8rem;
+}
+
+.dij-chip.front {
+  background: #38bdf8;
+  color: #0f172a;
+}
+
+.dij-empty {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+/* Explicación del paso y resultado */
+.dij-explain {
+  max-width: 800px;
+  margin: 1rem auto 0;
+  padding: 1rem;
+  border-radius: 8px;
+  background: rgba(124, 107, 214, 0.12);
+  border: 1px solid rgba(124, 107, 214, 0.35);
+}
+
+.dij-count {
+  margin-bottom: 0.25rem;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.dij-result {
+  max-width: 800px;
+  margin: 1rem auto 0;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.dij-result.ok {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.dij-result.no {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}

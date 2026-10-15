@@ -62,21 +62,18 @@ export function Home({ onSelectAlgorithm }) {
           id: 'linkedlist',
           name: 'Lista Enlazada',
           description: 'Estructura lineal donde cada elemento apunta al siguiente',
-          icon: '🔗',
           complexity: "O(1) inserción, O(n) búsqueda"
         },
         {
           id: 'bst',
           name: 'Árbol Binario (BST)',
           description: 'Árbol ordenado con máximo dos hijos por nodo',
-          icon: '🌳',
           complexity: 'O(log n) promedio'
         },
         {
           id: 'avl',
           name: 'Árbol AVL',
           description: 'BST auto-balanceado con factor de balance',
-          icon: '⚖️',
           complexity: 'O(log n) garantizado'
         }
       ]
@@ -86,31 +83,15 @@ export function Home({ onSelectAlgorithm }) {
       color: '#10b981',
       items: [
         {
-          id: 'astar',
-          name: 'A* (A-Star)',
-          description: 'Búsqueda de camino más corto usando heurística',
-          icon: '🎯',
-          complexity: 'O((V+E) log V)'
-        },
-        {
-          id: 'idastar',
-          name: 'IDA* (Iterative Deepening A*)',
-          description: 'Variante de A* que optimiza el uso de memoria',
-          icon: '🔄',
-          complexity: 'O(b^d) con menor memoria'
-        },
-        {
           id: 'binarysearch',
           name: 'Búsqueda Binaria',
           description: 'Búsqueda eficiente en arrays ordenados',
-          icon: '🔍',
           complexity: 'O(log n)'
         },
         {
           id: 'sequential',
           name: 'Búsqueda Secuencial',
           description: 'Búsqueda lineal elemento por elemento',
-          icon: '➡️',
           complexity: 'O(n)'
         }
       ]
@@ -123,24 +104,57 @@ export function Home({ onSelectAlgorithm }) {
           id: 'mergesort',
           name: 'Merge Sort',
           description: 'Divide y conquista ordenando mitades',
-          icon: '🔀',
           complexity: 'O(n log n) siempre'
         },
         {
           id: 'quicksort',
           name: 'Quick Sort',
           description: 'Ordenamiento rápido usando pivote',
-          icon: '⚡',
           complexity: 'O(n log n) promedio'
         },
         {
           id: 'bubblesort',
           name: 'Bubble Sort',
           description: 'Ordenamiento por comparación de adyacentes',
-          icon: '🫧',
           complexity: 'O(n²)'
         }
       ]
+    },
+    {
+      category: 'Algoritmos de busqeuda en grafos',
+      color: '#e48bfa',
+      items: [
+        {
+          id: 'astar',
+          name: 'A* (A-Star)',
+          description: 'Búsqueda de camino más corto usando heurística',
+          complexity: 'O((V+E) log V)'
+        },
+        {
+          id: 'idastar',
+          name: 'IDA* (Iterative Deepening A*)',
+          description: 'Variante de A* que optimiza el uso de memoria',
+          complexity: 'O(b^d) con menor memoria'
+        },
+        {
+          id: 'bfs',
+          name: 'Búsqueda en Anchura (BFS)',
+          description: 'Explora un grafo por niveles con una cola y encuentra el camino más corto sin pesos',
+          complexity: 'O(V + E), O(V)',
+        },
+        {
+          id: 'dfs',
+          name: 'Búsqueda en Profundidad (DFS)',
+          description: 'Avanza por una rama hasta el final y retrocede con una pila cuando se bloquea',
+          complexity: 'O(V + E), O(V)',
+        },
+        {
+          id: 'dijkstra',
+          name: 'Dijkstra',
+          description: 'Camino de menor costo en grafos con pesos no negativos usando una cola de prioridad',
+          complexity: 'O((V + E) log V), O(V)',
+        },
+      ],
     },
     {
       category: 'Algoritmos Avanzados',
@@ -150,49 +164,42 @@ export function Home({ onSelectAlgorithm }) {
           id: 'backtracking',
           name: 'Backtracking',
           description: 'Búsqueda exhaustiva con poda (8 Reinas)',
-          icon: '♛',
           complexity: 'O(N!) exponencial'
         },
         {
           id: 'backtracking-bitmask',
           name: 'Backtracking con Bitmask',
           description: 'Optimización usando máscaras de bits',
-          icon: '🎭',
           complexity: 'O(2^n) optimizado'
         },
         {
           id: 'branchandbound',
           name: 'Branch and Bound',
           description: 'Optimización con poda de soluciones (Mochila 0/1)',
-          icon: '🌿',
           complexity: 'O(2^n) con poda'
         },
         {
           id: 'mitm',
           name: 'Meet in the Middle',
           description: 'Divide problema exponencial en dos mitades',
-          icon: '🤝',
           complexity: 'O(2^(n/2))',
         },
         {
           id: 'annealing',
           name: 'Simulated Annealing',
           description: 'Optimización probabilística (TSP)',
-          icon: '🔥',
           complexity: 'Heurística',
         },
         {
           id: 'hillclimbing',
           name: 'Hill Climbing',
           description: 'Búsqueda local de mejora iterativa',
-          icon: '⛰️',
           complexity: 'Heurística'
         },
         {
           id: 'voronoi',
           name: 'Diagrama de Voronoi',
           description: 'Partición del espacio en regiones',
-          icon: '🗺️',
           complexity: 'O(n log n)'
         }
       ]
@@ -205,14 +212,12 @@ export function Home({ onSelectAlgorithm }) {
           id: 'comparison',
           name: 'Comparación de Búsqueda',
           description: 'Compara A*, Dijkstra, BFS y Greedy Best-First',
-          icon: '📊',
           complexity: 'Analítico'
         },
         {
           id: 'advanced-comparison',
           name: 'Comparación Avanzada',
           description: 'Compara optimizaciones: Bitmask y Meet in the Middle',
-          icon: '⚡',
           complexity: 'Analítico',
         }
       ]
